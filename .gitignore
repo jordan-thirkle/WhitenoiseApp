@@ -1,0 +1,41 @@
+# Flutter / Dart
+murmur/.dart_tool/
+murmur/.flutter-plugins
+murmur/.flutter-plugins-dependencies
+murmur/.packages
+murmur/build/
+murmur/pubspec.lock
+
+# Android
+murmur/android/.gradle/
+murmur/android/local.properties
+murmur/android/captures/
+murmur/android/key.properties
+*.jks
+*.keystore
+
+# iOS
+murmur/ios/.symlinks/
+murmur/ios/Flutter/flutter_export_environment.sh
+murmur/ios/Pods/
+murmur/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# macOS
+murmur/macos/.symlinks/
+murmur/macos/Flutter/ephemeral/
+
+# IDE
+.idea/
+.vscode/settings.json
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets — never commit these
+*.env
+.env.*
+google-services.json
+GoogleService-Info.plist
