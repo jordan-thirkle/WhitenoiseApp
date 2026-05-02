@@ -13,26 +13,28 @@ Last updated: 2026-04-30
 - [x] Implementation plan written and approved
 - [x] Git repo initialized
 - [x] GEMINI.md written (workspace context)
+- [x] Flutter SDK installation (via Puro)
+- [x] Flutter project scaffold (`flutter create`)
+- [x] Marketing landing pages (Privacy, Terms) added to JordanThirkle.com
+- [x] Clean default scaffold — remove counter app boilerplate
+- [x] Add dependencies to `pubspec.yaml`
+- [x] Implement `murmur_theme.dart`
+- [x] Implement `audio_handler.dart` and base UI (`home_screen.dart`)
+- [x] Android Studio and SDK installation
+- [x] Android licenses accepted
 
-## In Progress
-
-- [ ] Flutter SDK installation (not yet installed on machine)
-- [ ] Flutter project scaffold (`flutter create`)
+- [x] Download/process audio files (Synthetically generated for foundation)
+- [x] Verified Android build health (APK built successfully)
 
 ## Blocked
 
-- **Flutter not installed**: `flutter` command not found on PATH. Need to install Flutter SDK before `flutter create` can run.
-  - Download: https://docs.flutter.dev/get-started/install/windows/mobile
-  - After install, run `flutter doctor` and resolve any issues
-  - Xcode required on Mac for iOS builds (this is Windows — iOS builds need a Mac or CI)
+- None
 
-## Next Up (after Flutter installed)
+## Next Up
 
-1. `flutter create --org com.jordanthirkle --project-name murmur murmur/`
-2. Clean default scaffold — remove counter app boilerplate
-3. Add dependencies to `pubspec.yaml`
-4. Implement `murmur_theme.dart`
-5. Implement `audio_handler.dart`
+1. Download audio files from Freesound and convert to gapless loops (m4a/aac)
+2. Add assets to `pubspec.yaml`
+3. Run and test app locally
 
 ## Open Questions (need resolution before advancing)
 
