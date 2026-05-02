@@ -5,7 +5,7 @@ Last updated: 2026-04-30
 ## Current State
 
 **Phase**: Foundation — repo setup and Flutter scaffold
-**Status**: In progress
+**Status**: In progress (Transitioning to Mac for iOS builds)
 
 ## Completed
 
@@ -43,7 +43,7 @@ Last updated: 2026-04-30
 3. **Google Play Console account**: Active? ($25 one-time)
 4. **Audio sources**: CC0 from Freesound.org (I can identify tracks) or self-sourced?
 5. **jordanthirkle.com stack**: What framework? (Determines how to add /murmur landing page)
-6. **iOS builds**: This machine is Windows. iOS builds require a Mac or a CI service (Codemagic, GitHub Actions with macOS runner). Decision needed before Phase 5.
+6. **iOS builds**: This machine is Windows. iOS builds require a Mac. Moving to Mac now to continue Phase 5.
 
 ## Key Decisions Made
 
