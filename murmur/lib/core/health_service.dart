@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murmur/core/audit_logger.dart';
 // Note: In production, this uses 'package:health/health.dart'
 // and 'package:health_connect/health_connect.dart'
 
@@ -16,6 +16,13 @@ class HealthService {
     
     // 2026: Probabilistic Hypnodensity Charting
     final hypnodensity = await _fetchHypnodensityEpoch();
+    
+    _ref.read(auditLoggerProvider).logPhiAccess(
+      agentId: 'SovereignCoachV1',
+      dataType: 'Hypnodensity/SpO2/SleepBiometrics',
+      purpose: 'Biometric Feedback Optimization',
+    );
+
     debugPrint('AAA++ Intelligence: Current Epoch Probabilities: $hypnodensity');
 
     final sleepScore = await _fetchLatestSleepScore();
