@@ -157,13 +157,24 @@ class HomeScreen extends ConsumerWidget {
             Row(
               children: [
                 IconButton(
+                  icon: const Icon(Icons.info_outline_rounded, color: Colors.white38, size: 16),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ethical AI: NACEngine (C2PA Signed)')),
+                    );
+                  },
+                  tooltip: 'C2PA Content Credentials',
+                  visualDensity: VisualDensity.comfortable,
+                  padding: const EdgeInsets.all(12),
+                ),
+                IconButton(
                   icon: const Icon(Icons.psychology_rounded, color: Colors.deepPurpleAccent, size: 20),
                   onPressed: () {
                     ref.read(neuroStimulatorProvider).startNeuroDeepening();
                   },
                   tooltip: 'Neuro Sync',
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.comfortable,
+                  padding: const EdgeInsets.all(12),
                 ),
                 IconButton(
                   icon: const Icon(Icons.hearing_rounded, color: Colors.amberAccent, size: 20),
@@ -174,8 +185,8 @@ class HomeScreen extends ConsumerWidget {
                     );
                   },
                   tooltip: 'Latent Sep',
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.comfortable,
+                  padding: const EdgeInsets.all(12),
                 ),
                 // Neuro-Link Status (SQI / Target Rate)
                 Consumer(
@@ -224,32 +235,26 @@ class HomeScreen extends ConsumerWidget {
                     );
                   },
                   tooltip: 'Snore Guard',
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.comfortable,
+                  padding: const EdgeInsets.all(12),
                 ),
                 IconButton(
                   icon: const Icon(Icons.favorite_rounded, color: Colors.pinkAccent, size: 20),
                   onPressed: () {
                     ref.read(healthServiceProvider).openHealthDashboard();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Opening System Health Dashboard...')),
-                    );
                   },
                   tooltip: 'Health Sync',
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.comfortable,
+                  padding: const EdgeInsets.all(12),
                 ),
                 IconButton(
                   icon: const Icon(Icons.hub_rounded, color: Colors.blueAccent, size: 20),
                   onPressed: () {
                     ref.read(matterServiceProvider).broadcastSleepScene();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Matter 1.3 Sleep Scene Broadcast...')),
-                    );
                   },
                   tooltip: 'Matter Scene',
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.comfortable,
+                  padding: const EdgeInsets.all(12),
                 ),
                 IconButton(
                   icon: const Icon(Icons.waves_rounded, color: Colors.greenAccent, size: 20),
@@ -673,7 +678,7 @@ class SoundCard extends ConsumerWidget {
       curve: Curves.easeOutExpo,
       decoration: BoxDecoration(
         color: MurmurTheme.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: MurmurTheme.cardRadius,
         border: Border.all(
           color: state.isActive 
               ? MurmurTheme.accent.withOpacity(0.3 + (state.volume * 0.4)) 
@@ -689,7 +694,7 @@ class SoundCard extends ConsumerWidget {
         ] : [],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: MurmurTheme.cardRadius,
         child: Column(
           children: [
             Expanded(
@@ -853,14 +858,20 @@ class _PulseIconState extends State<_PulseIcon> with SingleTickerProviderStateMi
       CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
     );
 
-    if (widget.isActive) _controller.repeat(reverse: true);
+    final bool prefersReducedMotion = MediaQuery.of(context).accessibleNavigation;
+
+    if (widget.isActive && !prefersReducedMotion) {
+      _controller.repeat(reverse: true);
+    }
   }
 
   @override
   void didUpdateWidget(_PulseIcon oldWidget) {
     super.didUpdateWidget(oldWidget);
+    final bool prefersReducedMotion = MediaQuery.of(context).accessibleNavigation;
+
     if (widget.isActive != oldWidget.isActive) {
-      if (widget.isActive) {
+      if (widget.isActive && !prefersReducedMotion) {
         _controller.repeat(reverse: true);
       } else {
         _controller.stop();
@@ -1007,6 +1018,8 @@ class _CalibrationDialogState extends State<_CalibrationDialog> with SingleTicke
     );
   }
 
+  bool _isPaused = false;
+
   @override
   void dispose() {
     _pulseController.dispose();
@@ -1018,7 +1031,11 @@ class _CalibrationDialogState extends State<_CalibrationDialog> with SingleTicke
       _isCalibrating = true;
       _statusText = 'INITIALIZING SENSORS...';
     });
-    _pulseController.repeat();
+    
+    final bool prefersReducedMotion = MediaQuery.of(context).accessibleNavigation;
+    if (!prefersReducedMotion) {
+      _pulseController.repeat();
+    }
     
     // Phase 1: Bass Analysis
     await Future.delayed(const Duration(milliseconds: 800));
@@ -1053,27 +1070,48 @@ class _CalibrationDialogState extends State<_CalibrationDialog> with SingleTicke
       child: AlertDialog(
         backgroundColor: MurmurTheme.surface.withOpacity(0.8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: MurmurTheme.dialogRadius,
           side: BorderSide(color: Colors.white.withOpacity(0.05)),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.greenAccent.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'MEDICAL GRADE SENSOR',
-                style: TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.greenAccent.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'MEDICAL GRADE SENSOR',
+                    style: TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
                 ),
-              ),
+                IconButton(
+                  icon: Icon(_isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded, color: Colors.white24, size: 16),
+                  onPressed: () {
+                    setState(() {
+                      _isPaused = !_isPaused;
+                      if (_isPaused) {
+                        _pulseController.stop();
+                      } else {
+                        _pulseController.repeat();
+                      }
+                    });
+                  },
+                  tooltip: 'Pause Visuals',
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             const Text(
