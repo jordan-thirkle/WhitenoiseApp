@@ -41,6 +41,7 @@ dependencies:
   in_app_purchase: ^3.2.0
   nsd: ^2.1.2
   cryptography: ^2.5.0
+  quick_actions: ^1.0.10
   url_launcher: ^6.3.2
   google_fonts: ^8.1.0
 

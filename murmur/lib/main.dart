@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:quick_actions/quick_actions.dart';
 import 'core/audio_engine_repository.dart';
 import 'core/audio_handler.dart';
 import 'features/home/home_screen.dart';
@@ -33,6 +34,18 @@ void main() async {
       androidStopForegroundOnPause: true,
     ),
   );
+
+  // Initialize Quick Actions (OS Intent foundation)
+  const QuickActions quickActions = QuickActions();
+  quickActions.initialize((type) {
+    if (type == 'action_rain') {
+      repository.playSound('assets/audio/white_noise.ogg', volume: 0.6, tone: 0.4);
+    }
+  });
+  quickActions.setShortcutItems(<ShortcutItem>[
+    const ShortcutItem(type: 'action_rain', localizedTitle: 'Deep Rain', icon: 'icon_main'),
+    const ShortcutItem(type: 'action_sleep', localizedTitle: 'Sleep Now', icon: 'icon_main'),
+  ]);
 
   runApp(
     ProviderScope(
