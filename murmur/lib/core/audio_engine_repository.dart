@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../main.dart'; // To access global audioHandler
 
 class AudioEngineRepository {
   static final AudioEngineRepository _instance = AudioEngineRepository._internal();
@@ -60,6 +61,7 @@ class AudioEngineRepository {
       final handle = _soloud.play(source, volume: volume, looping: true);
       _activeHandles[assetPath] = handle;
       _updateTone(source, handle, tone);
+      audioHandler.play(); // Sync with OS
     } catch (e) {
       debugPrint('Error playing sound $assetPath: $e');
     }
@@ -70,6 +72,10 @@ class AudioEngineRepository {
     if (handle != null) {
       _soloud.stop(handle);
       _activeHandles.remove(assetPath);
+    }
+    
+    if (_activeHandles.isEmpty) {
+      audioHandler.stop(); // Sync with OS
     }
   }
 
@@ -82,6 +88,7 @@ class AudioEngineRepository {
       }
     }
     _activeHandles.clear();
+    audioHandler.stop(); // Sync with OS
   }
 
   void stopAllWithFade(Duration duration) {
@@ -94,6 +101,12 @@ class AudioEngineRepository {
       }
     }
     Timer(duration, () => _activeHandles.clear());
+  }
+
+  void applyGlobalToneShelf(double toneFactor) {
+    for (final assetPath in _activeHandles.keys) {
+      updateTone(assetPath, toneFactor);
+    }
   }
 
   void updateVolume(String assetPath, double volume) {

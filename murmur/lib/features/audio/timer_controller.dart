@@ -38,12 +38,29 @@ class TimerController extends StateNotifier<TimerState> {
       } else {
         state = state.copyWith(remaining: state.remaining! - const Duration(seconds: 1));
         
+        // Every 30 seconds, perform a subtle frequency shelf shift (Scientific Audio Shift)
+        if (state.remaining!.inSeconds % 30 == 0) {
+          _performAdaptiveShift();
+        }
+
         // Start fading when 60 seconds are left
         if (state.remaining!.inSeconds == 60) {
           _startFadeOut();
         }
       }
     });
+  }
+
+  void _performAdaptiveShift() {
+    if (state.selectedMinutes == null || state.remaining == null) return;
+    
+    // Calculate progress (1.0 at start, 0.0 at end)
+    final progress = state.remaining!.inSeconds / (state.selectedMinutes! * 60);
+    
+    // As we sleep, we want to lower the "Tone" (LPF) to remove harsh highs
+    // Target tone shifts from current towards 0.2 (Deep rumble)
+    // This is subtle (Scientific Personalization)
+    _repository.applyGlobalToneShelf(0.2 + (progress * 0.8));
   }
 
   void cancelTimer() {

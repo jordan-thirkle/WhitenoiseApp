@@ -8,6 +8,10 @@ class MurmurTheme {
   static const Color textPrimary = Color(0xDEFFFFFF); // 0.87 opacity
   static const Color textSecondary = Color(0x99FFFFFF); // 0.60 opacity
 
+  static Color get background => backgroundColor;
+  static Color get surface => surfaceColor;
+  static Color get accent => accentColor;
+
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,

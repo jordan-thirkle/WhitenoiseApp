@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/models/sound_model.dart';
@@ -235,10 +236,10 @@ class HomeScreen extends ConsumerWidget {
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) {
-            final sound = sounds[index];
+            final sound = availableSounds[index];
             return SoundCard(sound: sound);
           },
-          childCount: sounds.length,
+          childCount: availableSounds.length,
         ),
       ),
     );
@@ -399,7 +400,7 @@ class HomeScreen extends ConsumerWidget {
     ref.read(audioEngineProvider).stopAll();
     
     // Apply settings to each sound
-    for (final sound in sounds) {
+    for (final sound in availableSounds) {
       final setting = mix.settings[sound.assetPath] ?? SoundSetting(volume: 0.5, tone: 1.0, isPlaying: false);
       ref.read(soundCardProvider(sound.assetPath).notifier).applySetting(setting);
     }
@@ -444,7 +445,7 @@ class HomeScreen extends ConsumerWidget {
   void _saveCurrentMix(WidgetRef ref, String name) {
     final Map<String, SoundSetting> currentSettings = {};
     
-    for (final sound in sounds) {
+    for (final sound in availableSounds) {
       final state = ref.read(soundCardProvider(sound.assetPath));
       currentSettings[sound.assetPath] = SoundSetting(
         volume: state.volume,
@@ -465,7 +466,7 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class SoundCard extends ConsumerWidget {
-  final Sound sound;
+  final SoundModel sound;
   const SoundCard({super.key, required this.sound});
 
   @override
@@ -497,7 +498,10 @@ class SoundCard extends ConsumerWidget {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: controller.toggle,
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  controller.toggle();
+                },
                 behavior: HitTestBehavior.opaque,
                 child: Container(
                   width: double.infinity,
@@ -586,7 +590,10 @@ class SoundCard extends ConsumerWidget {
             ),
             child: Slider(
               value: value,
-              onChanged: onChanged,
+              onChanged: (val) {
+              HapticFeedback.selectionClick();
+              onChanged(val);
+            },
             ),
           ),
         ),
