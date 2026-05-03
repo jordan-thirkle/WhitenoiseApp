@@ -4,8 +4,8 @@ Last updated: 2026-04-30
 
 ## Current State
 
-**Phase**: Foundation — repo setup and Flutter scaffold
-**Status**: In progress (Transitioning to Mac for iOS builds)
+**Phase**: Phase 5 — iOS Build & Polish
+**Status**: Environment restored on Mac; Codebase reconstructed.
 
 ## Completed
 
@@ -32,9 +32,9 @@ Last updated: 2026-04-30
 
 ## Next Up
 
-1. Download audio files from Freesound and convert to gapless loops (m4a/aac)
-2. Add assets to `pubspec.yaml`
-3. Run and test app locally
+1. Finalise gapless audio loops (Synthetically generated foundation in place)
+2. Verify background audio persistence on iOS Simulator/Device
+3. Implement Favorites system and multi-track mixing (Phase 6)
 
 ## Open Questions (need resolution before advancing)
 
@@ -42,8 +42,8 @@ Last updated: 2026-04-30
 2. **Apple Developer account**: Active? ($99/yr required for submission)
 3. **Google Play Console account**: Active? ($25 one-time)
 4. **Audio sources**: CC0 from Freesound.org (I can identify tracks) or self-sourced?
-5. **jordanthirkle.com stack**: What framework? (Determines how to add /murmur landing page)
-6. **iOS builds**: This machine is Windows. iOS builds require a Mac. Moving to Mac now to continue Phase 5.
+5. **https://jordan-thirkle-com.vercel.app/murmur stack**: What framework? (Determines how to add /murmur landing page)
+6. **iOS builds**: Current machine is Mac. Xcode and Flutter are configured.
 
 ## Key Decisions Made
 
