@@ -7,6 +7,7 @@ import 'package:murmur/features/audio/sound_card_controller.dart';
 import 'package:murmur/core/audio_engine_repository.dart';
 import 'package:murmur/features/audio/mix_controller.dart';
 import 'package:murmur/models/mix_model.dart';
+import 'package:murmur/features/audio/timer_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -53,6 +54,8 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildMixerHeader(BuildContext context, WidgetRef ref) {
+    final timerState = ref.watch(timerControllerProvider);
+
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -63,9 +66,11 @@ class HomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'MULTI-TRACK MIXER',
+                  timerState.isRunning 
+                    ? 'TIMER: ${_formatDuration(timerState.remaining!)}'
+                    : 'MULTI-TRACK MIXER',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withOpacity(0.4),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
@@ -76,7 +81,7 @@ class HomeScreen extends ConsumerWidget {
                   width: 40,
                   height: 3,
                   decoration: BoxDecoration(
-                    color: MurmurTheme.accent,
+                    color: timerState.isRunning ? MurmurTheme.accent : MurmurTheme.accent.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -85,13 +90,20 @@ class HomeScreen extends ConsumerWidget {
             Row(
               children: [
                 IconButton(
+                  icon: Icon(
+                    timerState.isRunning ? Icons.timer_rounded : Icons.timer_outlined,
+                    color: timerState.isRunning ? MurmurTheme.accent : Colors.white30,
+                  ),
+                  onPressed: () => _showTimerSheet(context, ref),
+                ),
+                IconButton(
                   icon: const Icon(Icons.star_border_rounded, color: Color(0xFF7BA7F5)),
                   onPressed: () => _showFavoritesSheet(context, ref),
                 ),
                 TextButton.icon(
                   onPressed: () {
                     ref.read(audioEngineProvider).stopAll();
-                    // UI reset logic could be more complex, but for now we just stop the audio
+                    ref.read(timerControllerProvider.notifier).cancelTimer();
                   },
                   icon: const Icon(Icons.stop_rounded, size: 16, color: Colors.redAccent),
                   label: const Text(
@@ -105,6 +117,91 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$minutes:$seconds";
+  }
+
+  void _showTimerSheet(BuildContext context, WidgetRef ref) {
+    final timerState = ref.watch(timerControllerProvider);
+    final timerNotifier = ref.read(timerControllerProvider.notifier);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: MurmurTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'SLEEP TIMER',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 2),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Audio will fade out gradually over 60s',
+              style: TextStyle(fontSize: 12, color: Colors.white30),
+            ),
+            const SizedBox(height: 32),
+            if (timerState.isRunning)
+              Column(
+                children: [
+                  Text(
+                    _formatDuration(timerState.remaining!),
+                    style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w100),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      timerNotifier.cancelTimer();
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent.withOpacity(0.1),
+                      foregroundColor: Colors.redAccent,
+                      elevation: 0,
+                    ),
+                    child: const Text('CANCEL TIMER'),
+                  ),
+                ],
+              )
+            else
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [15, 30, 45, 60, 90, 120].map((mins) => 
+                  InkWell(
+                    onTap: () {
+                      timerNotifier.setTimer(mins);
+                      Navigator.pop(context);
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      width: 80,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white10),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text('$minsm', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  )
+                ).toList(),
+              ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

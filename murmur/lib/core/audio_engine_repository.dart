@@ -84,6 +84,18 @@ class AudioEngineRepository {
     _activeHandles.clear();
   }
 
+  void stopAllWithFade(Duration duration) {
+    for (final handle in _activeHandles.values) {
+      try {
+        _soloud.fadeVolume(handle, 0.0, duration);
+        _soloud.scheduleStop(handle, duration);
+      } catch (e) {
+        debugPrint('Error fading handle: $e');
+      }
+    }
+    Timer(duration, () => _activeHandles.clear());
+  }
+
   void updateVolume(String assetPath, double volume) {
     final handle = _activeHandles[assetPath];
     if (handle != null) {
