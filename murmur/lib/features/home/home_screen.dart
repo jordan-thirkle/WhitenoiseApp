@@ -16,6 +16,7 @@ import 'package:murmur/core/health_service.dart';
 import 'package:murmur/core/neuro_stimulator.dart';
 import 'package:murmur/core/spatial_audio_service.dart';
 import 'package:murmur/core/sovereign_coach_service.dart';
+import 'package:murmur/core/eeg_hardware_service.dart';
 import 'package:murmur/core/snore_neutralizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -156,13 +157,48 @@ class HomeScreen extends ConsumerWidget {
                   icon: const Icon(Icons.psychology_rounded, color: Colors.deepPurpleAccent, size: 20),
                   onPressed: () {
                     ref.read(neuroStimulatorProvider).startNeuroDeepening();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Neuro-Stimulation (CLAS) Active')),
-                    );
                   },
                   tooltip: 'Neuro Sync',
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   constraints: const BoxConstraints(),
+                ),
+                // Neuro-Link Status (SQI / Target Rate)
+                Consumer(
+                  builder: (context, ref, _) {
+                    final eeg = ref.watch(eegHardwareServiceProvider);
+                    return ValueListenableBuilder<double>(
+                      valueListenable: eeg.signalQuality,
+                      builder: (context, sqi, _) {
+                        if (sqi == 0) return const SizedBox.shrink();
+                        return Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurpleAccent.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 6,
+                                height: 6,
+                                decoration: const BoxDecoration(
+                                  color: Colors.greenAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'LINK: ${(sqi * 100).toInt()}%',
+                                style: MurmurTheme.secondaryText.copyWith(fontSize: 10, letterSpacing: 0.5),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.security_rounded, color: Colors.tealAccent, size: 20),
