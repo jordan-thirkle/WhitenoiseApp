@@ -11,6 +11,12 @@ class MurmurTheme {
   static Color get background => backgroundColor;
   static Color get surface => surfaceColor;
   static Color get accent => accentColor;
+  static const Color secondaryText = textSecondary;
+
+  static const double baseRadius = 28.0;
+  static final BorderRadius cardRadius = BorderRadius.circular(24.0);
+  static final BorderRadius dialogRadius = BorderRadius.circular(28.0);
+  static final BorderRadius innerRadius = BorderRadius.circular(16.0);
 
   static ThemeData get darkTheme {
     return ThemeData(
