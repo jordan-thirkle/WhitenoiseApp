@@ -13,6 +13,9 @@ import 'package:murmur/features/audio/timer_controller.dart';
 import 'package:murmur/core/iap_service.dart';
 import 'package:murmur/core/matter_service.dart';
 import 'package:murmur/core/health_service.dart';
+import 'package:murmur/core/neuro_stimulator.dart';
+import 'package:murmur/core/spatial_audio_service.dart';
+import 'package:murmur/core/sovereign_coach_service.dart';
 import 'package:murmur/core/snore_neutralizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -149,6 +152,18 @@ class HomeScreen extends ConsumerWidget {
             ),
             Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.psychology_rounded, color: Colors.deepPurpleAccent, size: 20),
+                  onPressed: () {
+                    ref.read(neuroStimulatorProvider).startNeuroDeepening();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Neuro-Stimulation (CLAS) Active')),
+                    );
+                  },
+                  tooltip: 'Neuro Sync',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
+                ),
                 IconButton(
                   icon: const Icon(Icons.security_rounded, color: Colors.tealAccent, size: 20),
                   onPressed: () {
