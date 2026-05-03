@@ -21,14 +21,49 @@ class AudioEngineRepository {
     try {
       await _soloud.init();
       
-      // Initialize Master Safety Limiter to prevent clipping during multi-track mixing
+      // Initialize Master Safety Limiter
       _soloud.filters.limiterFilter.activate();
       _soloud.filters.limiterFilter.threshold.value = -3.0;
       _soloud.filters.limiterFilter.outputCeiling.value = -0.1;
+
+      // Prepare Audio Capture for Room Calibration
+      await _soloud.audioCapture.init();
       
-      debugPrint('SoLoud Audio Engine Initialized with Master Safety Limiter');
+      debugPrint('SoLoud Audio Engine Initialized with Master Safety Limiter and Capture Interface');
     } catch (e) {
       debugPrint('Failed to initialize SoLoud: $e');
+    }
+  }
+
+  /// Performs a 5-second capture of room noise floor and returns the FFT spectrum
+  Future<List<double>> analyzeRoomNoise() async {
+    if (!isInitialized) return [];
+    
+    try {
+      // Start capturing from microphone
+      _soloud.audioCapture.start();
+      
+      // Accumulate FFT data for 3 seconds to average out transients
+      List<double> averageFft = List.filled(256, 0.0);
+      int samples = 0;
+      
+      final startTime = DateTime.now();
+      while (DateTime.now().difference(startTime).inSeconds < 3) {
+        final currentFft = _soloud.audioCapture.getFft();
+        for (int i = 0; i < 256; i++) {
+          averageFft[i] += currentFft[i];
+        }
+        samples++;
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      
+      _soloud.audioCapture.stop();
+      
+      // Calculate mean spectrum
+      return averageFft.map((val) => val / samples).toList();
+    } catch (e) {
+      debugPrint('Error during room analysis: $e');
+      return [];
     }
   }
 

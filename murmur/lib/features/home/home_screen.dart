@@ -106,6 +106,11 @@ class HomeScreen extends ConsumerWidget {
             Row(
               children: [
                 IconButton(
+                  icon: const Icon(Icons.waves_rounded, color: Colors.greenAccent),
+                  onPressed: () => _showCalibrationDialog(context, ref),
+                  tooltip: 'Calibrate Room',
+                ),
+                IconButton(
                   icon: Icon(
                     timerState.isRunning ? Icons.timer_rounded : Icons.timer_outlined,
                     color: timerState.isRunning ? MurmurTheme.accent : Colors.white30,
@@ -144,6 +149,55 @@ class HomeScreen extends ConsumerWidget {
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
+  }
+
+  void _showCalibrationDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _CalibrationDialog(
+        onCalibrate: () async {
+          final fft = await ref.read(audioEngineProvider).analyzeRoomNoise();
+          if (fft.isNotEmpty) {
+            _applyInverseMasking(ref, fft);
+          }
+        },
+      ),
+    );
+  }
+
+  void _applyInverseMasking(WidgetRef ref, List<double> fft) {
+    // Basic Inverse Masking Algorithm:
+    // fft[0-20] are low frequencies (AC hum, traffic)
+    // fft[20-100] are mid frequencies (Fans, talking)
+    // fft[100-255] are high frequencies (Hiss, electronics)
+    
+    double lowEnergy = fft.sublist(0, 20).reduce((a, b) => a + b) / 20;
+    double midEnergy = fft.sublist(20, 100).reduce((a, b) => a + b) / 80;
+    double highEnergy = fft.sublist(100, 256).reduce((a, b) => a + b) / 156;
+
+    // Normalizing energy to a usable volume multiplier
+    lowEnergy = (lowEnergy * 10).clamp(0.1, 0.8);
+    midEnergy = (midEnergy * 10).clamp(0.1, 0.8);
+    highEnergy = (highEnergy * 10).clamp(0.1, 0.8);
+
+    // Auto-Mix based on noise floor
+    ref.read(audioEngineProvider).stopAll();
+    
+    // Masking low hum with Brown Noise/Heartbeat
+    if (lowEnergy > 0.2) {
+      ref.read(soundCardProvider('brown').notifier).applySetting(SoundSetting(volume: lowEnergy, tone: 0.3, isPlaying: true));
+    }
+    
+    // Masking mid noise with Pink Noise/Fan
+    if (midEnergy > 0.2) {
+      ref.read(soundCardProvider('fan').notifier).applySetting(SoundSetting(volume: midEnergy, tone: 0.6, isPlaying: true));
+    }
+
+    // Masking high hiss with White Noise/Rain
+    if (highEnergy > 0.1) {
+      ref.read(soundCardProvider('white').notifier).applySetting(SoundSetting(volume: highEnergy, tone: 0.9, isPlaying: true));
+    }
   }
 
   void _showTimerSheet(BuildContext context, WidgetRef ref) {
@@ -712,6 +766,82 @@ class SettingsDialog extends StatelessWidget {
       title: Text(text),
       trailing: const Icon(Icons.open_in_new_rounded, size: 18),
       onTap: () => launchUrl(Uri.parse(url)),
+    );
+  }
+}
+
+class _CalibrationDialog extends StatefulWidget {
+  final Future<void> Function() onCalibrate;
+  const _CalibrationDialog({required this.onCalibrate});
+
+  @override
+  State<_CalibrationDialog> createState() => _CalibrationDialogState();
+}
+
+class _CalibrationDialogState extends State<_CalibrationDialog> {
+  bool _isCalibrating = false;
+  double _progress = 0.0;
+
+  void _start() async {
+    setState(() => _isCalibrating = true);
+    
+    // Simulate progress during the 3-second capture
+    final timer = Timer.periodic(const Duration(milliseconds: 100), (t) {
+      setState(() => _progress = (t.tick / 30.0).clamp(0.0, 1.0));
+      if (t.tick >= 30) t.cancel();
+    });
+
+    await widget.onCalibrate();
+    timer.cancel();
+    
+    if (mounted) Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      child: AlertDialog(
+        backgroundColor: MurmurTheme.surface.withOpacity(0.9),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('ACOUSTIC CALIBRATION', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+            const SizedBox(height: 16),
+            const Text(
+              'Murmur will analyze your room\'s noise floor to create a custom masking profile.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.white30),
+            ),
+            const SizedBox(height: 32),
+            if (!_isCalibrating)
+              ElevatedButton(
+                onPressed: _start,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.greenAccent.withOpacity(0.1),
+                  foregroundColor: Colors.greenAccent,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+                child: const Text('START ANALYSIS'),
+              )
+            else
+              Column(
+                children: [
+                  CircularProgressIndicator(value: _progress, color: Colors.greenAccent),
+                  const SizedBox(height: 16),
+                  const Text('ANALYZING...', style: TextStyle(fontSize: 10, letterSpacing: 2)),
+                ],
+              ),
+            const SizedBox(height: 16),
+            if (!_isCalibrating)
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('CANCEL', style: TextStyle(color: Colors.white24)),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
