@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/audio_engine_repository.dart';
+import 'package:murmur/models/mix_model.dart';
 
 class SoundState {
   final String assetPath;
@@ -36,7 +37,6 @@ class SoundCardController extends FamilyNotifier<SoundState, String> {
 
   @override
   SoundState build(String arg) {
-    // We should ideally pass the name too, but for simplicity we'll find it or use arg
     return SoundState(assetPath: arg, name: _getNameFromPath(arg));
   }
 
@@ -65,6 +65,20 @@ class SoundCardController extends FamilyNotifier<SoundState, String> {
     state = state.copyWith(tone: value);
     if (state.isActive) {
       _repository.updateTone(state.assetPath, value);
+    }
+  }
+
+  void applySetting(SoundSetting setting) {
+    state = state.copyWith(
+      volume: setting.volume,
+      tone: setting.tone,
+      isActive: setting.isPlaying,
+    );
+
+    if (state.isActive) {
+      _repository.playSound(state.assetPath, volume: state.volume, tone: state.tone);
+    } else {
+      _repository.stopSound(state.assetPath);
     }
   }
 }

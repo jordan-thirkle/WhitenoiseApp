@@ -5,6 +5,8 @@ import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/models/sound_model.dart';
 import 'package:murmur/features/audio/sound_card_controller.dart';
 import 'package:murmur/core/audio_engine_repository.dart';
+import 'package:murmur/features/audio/mix_controller.dart';
+import 'package:murmur/models/mix_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -13,96 +15,333 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: MurmurTheme.backgroundColor,
-      body: Stack(
-        children: [
-          // Background Gradient (Optimized for OLED)
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  MurmurTheme.backgroundColor,
-                  Color(0xFF0A0C11),
-                ],
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: Column(
+      backgroundColor: MurmurTheme.background,
+      body: CustomScrollView(
+        slivers: [
+          _buildAppBar(context, ref),
+          _buildMixerHeader(context, ref),
+          _buildSoundGrid(context, ref),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomBar(context, ref),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, WidgetRef ref) {
+    return SliverAppBar(
+      backgroundColor: Colors.transparent,
+      floating: true,
+      centerTitle: false,
+      title: Text(
+        'Murmur',
+        style: TextStyle(
+          fontSize: 48,
+          fontWeight: FontWeight.w900,
+          color: MurmurTheme.accent.withOpacity(0.8),
+          letterSpacing: -2,
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.info_outline_rounded, color: Colors.white70),
+          onPressed: () => _showAboutDialog(context),
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget _buildMixerHeader(BuildContext context, WidgetRef ref) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(context),
-                const Expanded(
-                  child: SoundGrid(),
+                Text(
+                  'MULTI-TRACK MIXER',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.4),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
                 ),
-                _buildMasterControl(),
+                const SizedBox(height: 4),
+                Container(
+                  width: 40,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: MurmurTheme.accent,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.star_border_rounded, color: Color(0xFF7BA7F5)),
+                  onPressed: () => _showFavoritesSheet(context, ref),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    ref.read(audioEngineProvider).stopAll();
+                    // UI reset logic could be more complex, but for now we just stop the audio
+                  },
+                  icon: const Icon(Icons.stop_rounded, size: 16, color: Colors.redAccent),
+                  label: const Text(
+                    'STOP ALL',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+  Widget _buildSoundGrid(BuildContext context, WidgetRef ref) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 0.85,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final sound = sounds[index];
+            return SoundCard(sound: sound);
+          },
+          childCount: sounds.length,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context, WidgetRef ref) {
+    return Container(
+      height: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      decoration: BoxDecoration(
+        color: MurmurTheme.surface.withOpacity(0.8),
+        border: Border(
+          top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Murmur",
-            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-              color: MurmurTheme.accentColor,
-              letterSpacing: -1,
-              fontWeight: FontWeight.w800,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'SYSTEM STATUS',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.3),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(
+                      color: Colors.greenAccent,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'ENGINE ACTIVE',
+                    style: TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () => _showAboutDialog(context),
-            icon: const Icon(Icons.info_outline, color: MurmurTheme.textSecondary),
-            tooltip: 'About Murmur',
+          ElevatedButton.icon(
+            onPressed: () => _showSaveMixDialog(context, ref),
+            icon: const Icon(Icons.add_rounded, size: 18),
+            label: const Text('SAVE MIX'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: MurmurTheme.accent,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMasterControl() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: MurmurTheme.surfaceColor.withOpacity(0.4),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border.all(color: Colors.white.withOpacity(0.03)),
+  void _showFavoritesSheet(BuildContext context, WidgetRef ref) {
+    final mixes = ref.watch(mixControllerProvider);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: MurmurTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Row(
-        children: [
-          const Expanded(
-            child: Text(
-              "MULTI-TRACK MIXER",
-              style: TextStyle(
-                color: MurmurTheme.textSecondary,
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2.0,
-              ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'SAVED MIXES',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
             ),
+            const SizedBox(height: 16),
+            if (mixes.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: Center(
+                  child: Text(
+                    'No saved mixes yet',
+                    style: TextStyle(color: Colors.white.withOpacity(0.3)),
+                  ),
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                itemCount: mixes.length,
+                separatorBuilder: (context, index) => const Divider(color: Colors.white10),
+                itemBuilder: (context, index) {
+                  final mix = mixes[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(mix.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: Text(
+                      '${mix.settings.values.where((s) => s.isPlaying).length} sounds active',
+                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.play_circle_outline_rounded, color: Color(0xFF7BA7F5)),
+                          onPressed: () {
+                            _applyMix(ref, mix);
+                            Navigator.pop(context);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                          onPressed: () => ref.read(mixControllerProvider.notifier).deleteMix(mix.id),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _applyMix(WidgetRef ref, MixModel mix) {
+    // Stop everything first
+    ref.read(audioEngineProvider).stopAll();
+    
+    // Apply settings to each sound
+    for (final sound in sounds) {
+      final setting = mix.settings[sound.assetPath] ?? SoundSetting(volume: 0.5, tone: 1.0, isPlaying: false);
+      ref.read(soundCardProvider(sound.assetPath).notifier).applySetting(setting);
+    }
+  }
+
+  void _showSaveMixDialog(BuildContext context, WidgetRef ref) {
+    final nameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: MurmurTheme.surface,
+        title: const Text('Save Current Mix'),
+        content: TextField(
+          controller: nameController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Enter mix name (e.g. Rainy Night)',
+            hintStyle: TextStyle(color: Colors.white24),
           ),
-          TextButton.icon(
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
             onPressed: () {
-              ref.read(audioEngineProvider).stopAll();
-              // TODO: Also reset the UI state of all SoundCards
+              if (nameController.text.isNotEmpty) {
+                _saveCurrentMix(ref, nameController.text);
+                Navigator.pop(context);
+              }
             },
-            icon: const Icon(Icons.stop_rounded, size: 16, color: Colors.redAccent),
-            label: const Text("STOP ALL", style: TextStyle(color: Colors.redAccent, fontSize: 10)),
+            child: const Text('SAVE', style: TextStyle(color: Color(0xFF7BA7F5))),
           ),
         ],
       ),
     );
+  }
+
+  void _saveCurrentMix(WidgetRef ref, String name) {
+    final Map<String, SoundSetting> currentSettings = {};
+    
+    for (final sound in sounds) {
+      final state = ref.read(soundCardProvider(sound.assetPath));
+      currentSettings[sound.assetPath] = SoundSetting(
+        volume: state.volume,
+        tone: state.tone,
+        isPlaying: state.isActive,
+      );
+    }
+    
+    ref.read(mixControllerProvider.notifier).saveMix(name, currentSettings);
   }
 
   void _showAboutDialog(BuildContext context) {
@@ -113,30 +352,8 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class SoundGrid extends StatelessWidget {
-  const SoundGrid({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 0.85, // Taller for sliders
-      ),
-      itemCount: availableSounds.length,
-      itemBuilder: (context, index) {
-        return SoundCard(sound: availableSounds[index]);
-      },
-    );
-  }
-}
-
 class SoundCard extends ConsumerWidget {
-  final SoundModel sound;
-
+  final Sound sound;
   const SoundCard({super.key, required this.sound});
 
   @override
@@ -144,81 +361,83 @@ class SoundCard extends ConsumerWidget {
     final state = ref.watch(soundCardProvider(sound.assetPath));
     final controller = ref.read(soundCardProvider(sound.assetPath).notifier);
 
-    return GestureDetector(
-      onTap: controller.toggle,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        decoration: BoxDecoration(
-          color: state.isActive 
-              ? MurmurTheme.surfaceColor.withOpacity(0.7) 
-              : MurmurTheme.surfaceColor.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: state.isActive 
-                ? MurmurTheme.accentColor.withOpacity(0.3) 
-                : Colors.white.withOpacity(0.04),
-            width: 1.5,
-          ),
-          boxShadow: state.isActive ? [
-            BoxShadow(
-              color: MurmurTheme.accentColor.withOpacity(0.1),
-              blurRadius: 20,
-              spreadRadius: -5,
-            )
-          ] : [],
+    return Container(
+      decoration: BoxDecoration(
+        color: MurmurTheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: state.isActive ? MurmurTheme.accent.withOpacity(0.5) : Colors.white.withOpacity(0.05),
+          width: 2,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Icon & Title
-              Row(
-                children: [
-                  Text(sound.icon, style: const TextStyle(fontSize: 24)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      sound.name,
-                      style: TextStyle(
-                        color: state.isActive ? MurmurTheme.textPrimary : MurmurTheme.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+        boxShadow: state.isActive ? [
+          BoxShadow(
+            color: MurmurTheme.accent.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 2,
+          )
+        ] : [],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: controller.toggle,
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        sound.icon,
+                        style: const TextStyle(fontSize: 32),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                      const SizedBox(height: 12),
+                      Text(
+                        sound.name,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: state.isActive ? Colors.white : Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Icon(
+                        state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded,
+                        color: state.isActive ? MurmurTheme.accent : Colors.white24,
+                        size: 32,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-              
-              // Sliders (Mini-Mixer)
-              if (state.isActive) ...[
-                _buildSliderRow(
-                  icon: Icons.volume_up_rounded,
-                  value: state.volume,
-                  onChanged: controller.setVolume,
-                  color: MurmurTheme.accentColor,
-                ),
-                _buildSliderRow(
-                  icon: Icons.graphic_eq_rounded,
-                  value: state.tone,
-                  onChanged: controller.setTone,
-                  color: Colors.amberAccent.withOpacity(0.7),
-                ),
-              ] else ...[
-                const Expanded(
-                  child: Center(
-                    child: Icon(
-                      Icons.power_settings_new_rounded,
-                      color: MurmurTheme.textSecondary,
-                      size: 32,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
+            ),
+            if (state.isActive) _buildMixerControls(context, state, controller),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMixerControls(BuildContext context, SoundState state, SoundCardController controller) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Column(
+        children: [
+          _buildSliderRow(
+            icon: Icons.volume_up_rounded,
+            value: state.volume,
+            onChanged: controller.setVolume,
+          ),
+          const SizedBox(height: 8),
+          _buildSliderRow(
+            icon: Icons.graphic_eq_rounded,
+            value: state.tone,
+            onChanged: controller.setTone,
+          ),
+        ],
       ),
     );
   }
@@ -226,20 +445,19 @@ class SoundCard extends ConsumerWidget {
   Widget _buildSliderRow({
     required IconData icon,
     required double value,
-    required ValueChanged<double> onChanged,
-    required Color color,
+    required Function(double) onChanged,
   }) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: MurmurTheme.textSecondary.withOpacity(0.5)),
+        Icon(icon, size: 14, color: Colors.white30),
         Expanded(
           child: SliderTheme(
             data: SliderThemeData(
               trackHeight: 2,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
-              activeTrackColor: color,
-              inactiveTrackColor: Colors.white.withOpacity(0.05),
+              activeTrackColor: MurmurTheme.accent,
+              inactiveTrackColor: Colors.white10,
               thumbColor: Colors.white,
             ),
             child: Slider(
@@ -256,52 +474,36 @@ class SoundCard extends ConsumerWidget {
 class SettingsDialog extends StatelessWidget {
   const SettingsDialog({super.key});
 
-  Future<void> _launchURL(String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: AlertDialog(
-        backgroundColor: MurmurTheme.surfaceColor.withOpacity(0.9),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text(
-          "About Murmur",
-          style: TextStyle(color: MurmurTheme.textPrimary, fontWeight: FontWeight.bold),
-        ),
+        backgroundColor: MurmurTheme.surface.withOpacity(0.9),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        title: const Text('Murmur', style: TextStyle(fontWeight: FontWeight.w900)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            _buildLink(context, 'Privacy Policy', 'https://jordan-thirkle-com.vercel.app/murmur/privacy'),
+            _buildLink(context, 'Terms of Service', 'https://jordan-thirkle-com.vercel.app/murmur/terms'),
+            const SizedBox(height: 16),
             const Text(
-              "Premium white noise for the whole family. No tracking, no data collection, just sleep.",
-              style: TextStyle(color: MurmurTheme.textSecondary),
+              'Premium Ambient Audio Engine\nv1.1.0 (Stable)',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.white30),
             ),
-            const SizedBox(height: 24),
-            _buildLink(context, "Privacy Policy", "https://jordan-thirkle-com.vercel.app/murmur/privacy"),
-            _buildLink(context, "Terms of Service", "https://jordan-thirkle-com.vercel.app/murmur/terms"),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close", style: TextStyle(color: MurmurTheme.accentColor)),
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildLink(BuildContext context, String title, String url) {
+  Widget _buildLink(BuildContext context, String text, String url) {
     return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title, style: const TextStyle(color: MurmurTheme.accentColor)),
-      trailing: const Icon(Icons.open_in_new, color: MurmurTheme.accentColor, size: 18),
-      onTap: () => _launchURL(url),
+      title: Text(text),
+      trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+      onTap: () => launchUrl(Uri.parse(url)),
     );
   }
 }
