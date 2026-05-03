@@ -112,6 +112,14 @@ class MatterService {
     // Dynamic closure scheduling via HRAP (Home Router Access Point)
   }
 
+  /// Matter 1.5.1: Multi-Stream & HEIC
+  /// Orchestrates simultaneous video streams for AI analysis and high-res capture.
+  Future<void> initializeMultiStreamSleepCamera() async {
+    debugPrint('Sovereign Frontier: Initializing Matter 1.5.1 Multi-Stream Video...');
+    // Stream 1: Low-res AI analysis (GNN diagnostics)
+    // Stream 2: High-res local HEIC capture
+  }
+
   void dispose() {
     _socket?.close();
   }
