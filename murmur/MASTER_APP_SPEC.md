@@ -60,43 +60,40 @@
   - **Onscreen Awareness**: System-level suggestions triggered by external app context (e.g., health articles).
 - **Matter 1.4/1.5/1.6 Alignment**:
   - **Smart Closures (Matter 1.5)**: Integrated coordination of blinds and curtains with acoustic scenes.
-  - **Addressable Lighting (Matter 1.6)**: Pixel-level RGBIC synchronization with NAC synthesis streams.
-  - **HRAP (Home Router Access Point)**: Standardized Thread credential sharing for multi-hub reliability.
-  - **Energy Reporting**: Real-time efficiency metrics for noise-masking speaker groups.
   - **Kinetic Orchestration (Matter 1.5/1.6)**: Standardized control for adjustable beds; 7.5-degree head elevation trigger upon sustained snore detection.
-  - **Shared-Memory Multithreading (isolateGroupBound)**: Dart 3.9+ zero-latency memory sharing for real-time neuro-stimulation pulses.
+  - **Active Recovery (Matter 1.7)**: Dynamic scheduling of smart closures to extend sleep cycles based on suboptimal biometric recovery trends.
+  - **Shared-Memory Multithreading (isolateGroupBound)**: Dart 3.9+ zero-latency memory sharing for EEG artifact rejection and CLAS pulses.
 
 ## 8. Health Ecosystem Integration (2026/2027 Standard)
+- **EEG Hardware Bridge (2027 Sovereign)**:
+  - Integration with Muse 2/S, BrainBit, and Neurosity SDKs for real-time Fp1/Fp2 brainwave monitoring.
+  - **Signal Quality Index (SQI)**: Real-time visualization of electrode contact stability.
 - **Apple HealthKit (iOS 26.4)**:
   - **Sleep Analysis**: Integration with `HKCategoryTypeIdentifier.sleepAnalysis`.
-  - **PHRTF Scanning**: Integration with TrueDepth/LiDAR ear-scanning APIs for personalized spatial audio.
-  - **Blood Oxygenation (SpO2)**: Real-time SpO2 curve integration for respiratory masking triggers.
-- **Daily Sleep Score**: Correlation with watchOS 26 recovery metrics (0-100).
+  - **PHRTF Scanning**: Integration with TrueDepth/LiDAR ear-scanning APIs.
 - **Google Health Connect (Android 17)**:
   - **SleepSessionRecord**: Support for granular sleep stages and **Hypnodensity Probability** data.
-  - **Vitals Integration**: Blood Oxygen and Respiratory Rate curves for predictive screening.
 - **Sovereign Coach (On-Device LLM)**:
-  - Multimodal LLM (PH-LLM / Edge Veda) for conversational recovery debriefs.
-  - Autonomous mixer adjustment based on 30-day biometric longitudinal reasoning.
+  - Multimodal LLM (PH-LLM / Edge Veda) for autonomous mixer adjustment and "Active Recovery" orchestration.
 
 ## 9. Biometric Intelligence Loop (Sovereign Update)
 - **Closed-Loop Auditory Stimulation (CLAS)**: 
-  - Real-time delta wave detection ($0.5-1.5$ Hz) with phase-locked pink noise bursts.
-  - Mean detection-to-stimulation latency targeting $< 20.5$ ms.
-- **Personalized Spatial Audio (PHRTF)**: 81% improved localization accuracy via user-specific HRTF reconstruction.
-- **SpO2 Adaptive Masking**: Automated enhancement of "Deep Brown" noise intensity upon sustained SpO2 drops.
+  - Real-time delta wave detection using EEG-sourced slow-wave oscillations.
+  - **Artifact Rejection Isolate**: Zero-latency filtering of eye blinks and muscle noise via `isolateGroupBound`.
+- **Neuro-Link Dashboard**: Real-time visualization of SQI and Targeting Success Rate (phase-lock accuracy).
+- **SpO2 Adaptive Masking**: Automated enhancement of "Deep Brown" noise intensity upon SpO2 drops.
 
 ## 10. Implementation Roadmap
-- **Phase 6 (Complete)**: Ultra-AAA++ "Proactive Sleeper" (C2PA, Kinetic Intervention).
 - **Phase 7 (Strategic - Sovereign Tier 2027)**:
-  - **Neuro-Stimulation (CLAS)**: Active deepening of N3 sleep stages via phase-locked pulse orchestration.
-  - **Spatial Scanner (PHRTF)**: TrueDepth-based head/ear geometry reconstruction for 3D acoustic immersion.
-  - **Sovereign Coach**: Integration of on-device multimodal LLM for conversational health insights.
+  - **EEG Integration**: Hardware bridge for Muse/Neurosity dry-electrode brainwave telemetry.
+  - **Neuro-Link UI**: Real-time signal quality and CLAS success metrics.
+  - **Active Recovery**: Matter 1.7 dynamic closure scheduling for emergency sleep extension.
 
 ## 11. Core Intelligence Pillars (2027 Edition)
-### 11.1 Neuro-Stimulation (CLAS)
-- **Pulse Type**: Pink Noise bursts (50ms duration) phase-locked to slow-oscillation "up-phases."
-- **Benefit**: Enhanced memory consolidation and deeper SWS (Slow Wave Sleep) duration.
+### 11.1 Neuro-Stimulation (CLAS) & EEG
+- **Signal Source**: Forehead Fp1/Fp2 channels via integrated EEG SDKs.
+- **Detection**: Phase-locking pulses to Slow-Oscillation (SO) "up-phases."
+- **Artifact Rejection**: Dedicated high-performance isolate for dry-electrode noise filtering.
 
 ### 11.2 Sovereign Coach (LLM)
 - **Architecture**: Local-only inference using quantized PH-LLM or Edge Veda weights.
