@@ -21,6 +21,7 @@ import 'package:murmur/core/codec_sep_engine.dart';
 import 'package:murmur/core/gnn_diagnostic_service.dart';
 import 'package:murmur/core/ephemeral_agent_service.dart';
 import 'package:murmur/core/snore_neutralizer.dart';
+import 'package:murmur/features/stats/stats_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -226,6 +227,7 @@ class HomeScreen extends ConsumerWidget {
                     );
                   },
                 ),
+                const SizedBox(width: 8), // Increased hit-box buffer
                 IconButton(
                   icon: const Icon(Icons.security_rounded, color: Colors.tealAccent, size: 20),
                   onPressed: () {
@@ -443,16 +445,19 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildBottomBar(BuildContext context, WidgetRef ref) {
-    return Container(
-      height: 100,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: BoxDecoration(
-        color: MurmurTheme.surface.withOpacity(0.8),
-        border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
-        ),
-      ),
-      child: Row(
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          height: 100,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          decoration: BoxDecoration(
+            color: MurmurTheme.surface.withOpacity(0.8),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+            ),
+          ),
+          child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
@@ -492,18 +497,36 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
           ),
-          ElevatedButton.icon(
-            onPressed: () => _showSaveMixDialog(context, ref),
-            icon: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('SAVE MIX'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MurmurTheme.accent,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          Row(
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const StatsScreen()),
+                  );
+                },
+                icon: const Icon(Icons.insights_rounded, size: 18, color: Colors.white70),
+                label: const Text('INSIGHTS', style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              ElevatedButton.icon(
+                onPressed: () => _showSaveMixDialog(context, ref),
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: const Text('SAVE MIX'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MurmurTheme.accent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
