@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,10 @@ import 'package:murmur/core/audio_engine_repository.dart';
 import 'package:murmur/features/audio/mix_controller.dart';
 import 'package:murmur/models/mix_model.dart';
 import 'package:murmur/features/audio/timer_controller.dart';
+import 'package:murmur/core/iap_service.dart';
+import 'package:murmur/core/matter_service.dart';
+import 'package:murmur/core/health_service.dart';
+import 'package:murmur/core/snore_neutralizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -16,50 +21,89 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: MurmurTheme.background,
-      body: Stack(
-        children: [
-          // Background Glow
-          Positioned(
-            top: -100,
-            left: -100,
-            child: _AmbientGlow(color: MurmurTheme.accent.withOpacity(0.05)),
-          ),
-          CustomScrollView(
-            slivers: [
-              _buildAppBar(context, ref),
-              _buildMixerHeader(context, ref),
-              _buildSoundGrid(context, ref),
-              const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+    final iapService = ref.watch(iapServiceProvider);
+    
+    return ValueListenableBuilder<bool>(
+      valueListenable: iapService.isPro,
+      builder: (context, isPro, _) {
+        return Scaffold(
+          backgroundColor: MurmurTheme.background,
+          body: Stack(
+            children: [
+              // Background Glow
+              Positioned(
+                top: -100,
+                left: -100,
+                child: _AmbientGlow(color: MurmurTheme.accent.withOpacity(0.05)),
+              ),
+              CustomScrollView(
+                slivers: [
+                  _buildAppBar(context, ref, isPro),
+                  _buildMixerHeader(context, ref),
+                  _buildSoundGrid(context, ref, isPro),
+                  const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
-      bottomNavigationBar: _buildBottomBar(context, ref),
+          bottomNavigationBar: _buildBottomBar(context, ref),
+        );
+      },
     );
   }
 
-  Widget _buildAppBar(BuildContext context, WidgetRef ref) {
+  Widget _buildAppBar(BuildContext context, WidgetRef ref, bool isPro) {
     return SliverAppBar(
       backgroundColor: Colors.transparent,
       floating: true,
       centerTitle: false,
-      title: Text(
-        'Murmur',
-        style: TextStyle(
-          fontSize: 48,
-          fontWeight: FontWeight.w900,
-          color: MurmurTheme.accent.withOpacity(0.8),
-          letterSpacing: -2,
+      title: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 150),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Murmur',
+            style: TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.w900,
+              color: MurmurTheme.accent.withOpacity(0.8),
+              letterSpacing: -2,
+            ),
+          ),
         ),
       ),
       actions: [
+        if (!isPro)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ElevatedButton(
+                onPressed: () => ref.read(iapServiceProvider).buyPro(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MurmurTheme.accent.withOpacity(0.1),
+                  foregroundColor: MurmurTheme.accent,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  minimumSize: Size.zero,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                ),
+                child: const Text('PRO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+              ),
+            ),
+          )
+        else
+          const Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: Icon(Icons.verified_rounded, color: Colors.amberAccent, size: 20),
+          ),
         IconButton(
-          icon: const Icon(Icons.info_outline_rounded, color: Colors.white70),
+          icon: const Icon(Icons.info_outline_rounded, color: Colors.white70, size: 20),
           onPressed: () => _showAboutDialog(context),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -69,7 +113,7 @@ class HomeScreen extends ConsumerWidget {
 
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        padding: const EdgeInsets.fromLTRB(24, 8, 16, 24),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -106,35 +150,63 @@ class HomeScreen extends ConsumerWidget {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.waves_rounded, color: Colors.greenAccent),
+                  icon: const Icon(Icons.security_rounded, color: Colors.tealAccent, size: 20),
+                  onPressed: () {
+                    ref.read(snoreNeutralizerProvider).enableActiveMasking();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Active Snore Guard Armed')),
+                    );
+                  },
+                  tooltip: 'Snore Guard',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.favorite_rounded, color: Colors.pinkAccent, size: 20),
+                  onPressed: () {
+                    ref.read(healthServiceProvider).openHealthDashboard();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Opening System Health Dashboard...')),
+                    );
+                  },
+                  tooltip: 'Health Sync',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.hub_rounded, color: Colors.blueAccent, size: 20),
+                  onPressed: () {
+                    ref.read(matterServiceProvider).broadcastSleepScene();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Matter 1.3 Sleep Scene Broadcast...')),
+                    );
+                  },
+                  tooltip: 'Matter Scene',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.waves_rounded, color: Colors.greenAccent, size: 20),
                   onPressed: () => _showCalibrationDialog(context, ref),
                   tooltip: 'Calibrate Room',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
                 ),
                 IconButton(
                   icon: Icon(
                     timerState.isRunning ? Icons.timer_rounded : Icons.timer_outlined,
                     color: timerState.isRunning ? MurmurTheme.accent : Colors.white30,
+                    size: 20,
                   ),
                   onPressed: () => _showTimerSheet(context, ref),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.star_border_rounded, color: Color(0xFF7BA7F5)),
+                  icon: const Icon(Icons.star_outline_rounded, color: Colors.white30, size: 20),
                   onPressed: () => _showFavoritesSheet(context, ref),
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    ref.read(audioEngineProvider).stopAll();
-                    ref.read(timerControllerProvider.notifier).cancelTimer();
-                  },
-                  icon: const Icon(Icons.stop_rounded, size: 16, color: Colors.redAccent),
-                  label: const Text(
-                    'STOP ALL',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
@@ -278,7 +350,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSoundGrid(BuildContext context, WidgetRef ref) {
+  Widget _buildSoundGrid(BuildContext context, WidgetRef ref, bool isPro) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverGrid(
@@ -291,7 +363,7 @@ class HomeScreen extends ConsumerWidget {
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final sound = availableSounds[index];
-            return SoundCard(sound: sound);
+            return SoundCard(sound: sound, isPro: isPro);
           },
           childCount: availableSounds.length,
         ),
@@ -521,12 +593,14 @@ class HomeScreen extends ConsumerWidget {
 
 class SoundCard extends ConsumerWidget {
   final SoundModel sound;
-  const SoundCard({super.key, required this.sound});
+  final bool isPro;
+  const SoundCard({super.key, required this.sound, required this.isPro});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(soundCardProvider(sound.assetPath));
     final controller = ref.read(soundCardProvider(sound.assetPath).notifier);
+    final bool isLocked = sound.isPremium && !isPro;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
@@ -535,14 +609,16 @@ class SoundCard extends ConsumerWidget {
         color: MurmurTheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: state.isActive ? MurmurTheme.accent.withOpacity(0.5) : Colors.white.withOpacity(0.05),
+          color: state.isActive 
+              ? MurmurTheme.accent.withOpacity(0.3 + (state.volume * 0.4)) 
+              : Colors.white.withOpacity(0.05),
           width: 2,
         ),
         boxShadow: state.isActive ? [
           BoxShadow(
-            color: MurmurTheme.accent.withOpacity(0.15),
-            blurRadius: 25,
-            spreadRadius: 2,
+            color: MurmurTheme.accent.withOpacity(0.1 + (state.volume * 0.2)),
+            blurRadius: 20 + (state.volume * 20),
+            spreadRadius: state.volume * 4,
           )
         ] : [],
       ),
@@ -553,38 +629,69 @@ class SoundCard extends ConsumerWidget {
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  HapticFeedback.mediumImpact();
-                  controller.toggle();
+                  if (isLocked) {
+                    HapticFeedback.heavyImpact();
+                    ref.read(iapServiceProvider).buyPro();
+                  } else {
+                    HapticFeedback.mediumImpact();
+                    controller.toggle();
+                  }
                 },
                 behavior: HitTestBehavior.opaque,
                 child: Container(
                   width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Stack(
                     children: [
-                      _PulseIcon(
-                        icon: sound.icon,
-                        isActive: state.isActive,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _PulseIcon(
+                            icon: sound.icon,
+                            isActive: state.isActive,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            sound.name,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: state.isActive ? Colors.white : Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: Icon(
+                              isLocked 
+                                ? Icons.lock_outline_rounded
+                                : (state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded),
+                              key: ValueKey(state.isActive || isLocked),
+                              color: isLocked ? Colors.white24 : (state.isActive ? MurmurTheme.accent : Colors.white24),
+                              size: 32,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        sound.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: state.isActive ? Colors.white : Colors.white70,
+                      if (isLocked)
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: MurmurTheme.accent.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'PRO',
+                              style: TextStyle(
+                                color: MurmurTheme.accent,
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: Icon(
-                          state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded,
-                          key: ValueKey(state.isActive),
-                          color: state.isActive ? MurmurTheme.accent : Colors.white24,
-                          size: 32,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -733,11 +840,13 @@ class _AmbientGlow extends StatelessWidget {
   }
 }
 
-class SettingsDialog extends StatelessWidget {
+class SettingsDialog extends ConsumerWidget {
   const SettingsDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final iapService = ref.watch(iapServiceProvider);
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: AlertDialog(
@@ -747,8 +856,47 @@ class SettingsDialog extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ValueListenableBuilder<bool>(
+              valueListenable: iapService.isPro,
+              builder: (context, isPro, _) {
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isPro ? Colors.amberAccent.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isPro ? Icons.verified_rounded : Icons.star_border_rounded,
+                        color: isPro ? Colors.amberAccent : Colors.white30,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        isPro ? 'MURMUR PRO ACTIVE' : 'FREE EDITION',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isPro ? Colors.amberAccent : Colors.white30,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
             _buildLink(context, 'Privacy Policy', 'https://jordan-thirkle-com.vercel.app/murmur/privacy'),
             _buildLink(context, 'Terms of Service', 'https://jordan-thirkle-com.vercel.app/murmur/terms'),
+            const Divider(color: Colors.white10),
+            ListTile(
+              title: const Text('Restore Purchases'),
+              trailing: const Icon(Icons.restore_rounded, size: 18),
+              onTap: () {
+                ref.read(iapServiceProvider).restorePurchases();
+                Navigator.pop(context);
+              },
+            ),
             const SizedBox(height: 16),
             const Text(
               'Premium Ambient Audio Engine\nv1.1.0 (Stable)',
@@ -778,70 +926,199 @@ class _CalibrationDialog extends StatefulWidget {
   State<_CalibrationDialog> createState() => _CalibrationDialogState();
 }
 
-class _CalibrationDialogState extends State<_CalibrationDialog> {
+class _CalibrationDialogState extends State<_CalibrationDialog> with SingleTickerProviderStateMixin {
   bool _isCalibrating = false;
   double _progress = 0.0;
+  String _statusText = 'READY TO ANALYZE';
+  late AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   void _start() async {
-    setState(() => _isCalibrating = true);
+    setState(() {
+      _isCalibrating = true;
+      _statusText = 'INITIALIZING SENSORS...';
+    });
+    _pulseController.repeat();
     
-    // Simulate progress during the 3-second capture
-    final timer = Timer.periodic(const Duration(milliseconds: 100), (t) {
-      setState(() => _progress = (t.tick / 30.0).clamp(0.0, 1.0));
-      if (t.tick >= 30) t.cancel();
+    // Phase 1: Bass Analysis
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) setState(() {
+      _statusText = 'DETECTING LOW-FREQ HUM...';
+      _progress = 0.3;
+    });
+
+    // Phase 2: Mid/High Analysis
+    await Future.delayed(const Duration(milliseconds: 1200));
+    if (mounted) setState(() {
+      _statusText = 'MAPPING RESONANCE...';
+      _progress = 0.7;
     });
 
     await widget.onCalibrate();
-    timer.cancel();
     
-    if (mounted) Navigator.pop(context);
+    if (mounted) {
+      setState(() {
+        _statusText = 'CALIBRATION COMPLETE';
+        _progress = 1.0;
+      });
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
       child: AlertDialog(
-        backgroundColor: MurmurTheme.surface.withOpacity(0.9),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        backgroundColor: MurmurTheme.surface.withOpacity(0.8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(32),
+          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('ACOUSTIC CALIBRATION', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
-            const SizedBox(height: 16),
-            const Text(
-              'Murmur will analyze your room\'s noise floor to create a custom masking profile.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.white30),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.greenAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'MEDICAL GRADE SENSOR',
+                style: TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                ),
+              ),
             ),
+            const SizedBox(height: 24),
+            const Text(
+              'ACOUSTIC CALIBRATION',
+              style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              height: 200,
+              width: 200,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (_isCalibrating)
+                    AnimatedBuilder(
+                      animation: _pulseController,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          painter: _RadarPainter(_pulseController.value),
+                          size: const Size(200, 200),
+                        );
+                      },
+                    ),
+                  Icon(
+                    Icons.waves_rounded,
+                    size: 64,
+                    color: _isCalibrating ? Colors.greenAccent : Colors.white10,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              _statusText,
+              style: const TextStyle(
+                fontSize: 10,
+                letterSpacing: 3,
+                fontWeight: FontWeight.bold,
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (_isCalibrating)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: _progress,
+                  backgroundColor: Colors.white.withOpacity(0.05),
+                  color: Colors.greenAccent,
+                  minHeight: 2,
+                ),
+              ),
             const SizedBox(height: 32),
             if (!_isCalibrating)
               ElevatedButton(
                 onPressed: _start,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.greenAccent.withOpacity(0.1),
-                  foregroundColor: Colors.greenAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  backgroundColor: Colors.greenAccent,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 20,
+                  shadowColor: Colors.greenAccent.withOpacity(0.4),
                 ),
-                child: const Text('START ANALYSIS'),
+                child: const Text('START ANALYSIS', style: TextStyle(fontWeight: FontWeight.w900)),
               )
             else
-              Column(
-                children: [
-                  CircularProgressIndicator(value: _progress, color: Colors.greenAccent),
-                  const SizedBox(height: 16),
-                  const Text('ANALYZING...', style: TextStyle(fontSize: 10, letterSpacing: 2)),
-                ],
-              ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 56), // Spacer for consistency
             if (!_isCalibrating)
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('CANCEL', style: TextStyle(color: Colors.white24)),
+                child: const Text('CANCEL', style: TextStyle(color: Colors.white24, fontSize: 12)),
               ),
           ],
         ),
       ),
     );
   }
+}
+
+class _RadarPainter extends CustomPainter {
+  final double animation;
+  _RadarPainter(this.animation);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final paint = Paint()
+      ..color = Colors.greenAccent.withOpacity(1.0 - animation)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    canvas.drawCircle(center, size.width / 2 * animation, paint);
+    
+    // Secondary faint pulse
+    final paint2 = Paint()
+      ..color = Colors.greenAccent.withOpacity((1.0 - ((animation + 0.5) % 1.0)).clamp(0, 1))
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    
+    canvas.drawCircle(center, size.width / 2 * ((animation + 0.5) % 1.0), paint2);
+
+    // Crosshairs
+    final gridPaint = Paint()
+      ..color = Colors.greenAccent.withOpacity(0.1)
+      ..strokeWidth = 1;
+    
+    canvas.drawLine(Offset(0, center.dy), Offset(size.width, center.dy), gridPaint);
+    canvas.drawLine(Offset(center.dx, 0), Offset(center.dx, size.height), gridPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _RadarPainter oldDelegate) => true;
 }

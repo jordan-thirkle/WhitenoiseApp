@@ -9,6 +9,9 @@ import 'core/audio_handler.dart';
 import 'features/home/home_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/audio/mix_controller.dart';
+import 'core/iap_service.dart';
+import 'core/sync_service.dart';
+import 'core/matter_service.dart';
 
 // Global audio handler
 late AudioHandler audioHandler;
@@ -20,6 +23,16 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final bool onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
   
+  // Initialize Intelligence Layer
+  final iapService = IapService();
+  iapService.init();
+
+  final syncService = SyncService();
+  syncService.start();
+
+  final matterService = MatterService();
+  await matterService.init();
+
   // Initialize Audio Engine
   final repository = AudioEngineRepository();
   await repository.init();
@@ -51,6 +64,9 @@ void main() async {
     ProviderScope(
       overrides: [
         sharedPrefsProvider.overrideWithValue(prefs),
+        iapServiceProvider.overrideWithValue(iapService),
+        syncServiceProvider.overrideWithValue(syncService),
+        matterServiceProvider.overrideWithValue(matterService),
       ],
       child: MurmurApp(startScreen: onboardingComplete ? const HomeScreen() : const OnboardingScreen()),
     ),
