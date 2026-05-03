@@ -5,12 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart'; // To access global audioHandler
 
+import 'calibration_service.dart';
+
 class AudioEngineRepository {
   static final AudioEngineRepository _instance = AudioEngineRepository._internal();
   factory AudioEngineRepository() => _instance;
   AudioEngineRepository._internal();
 
   final SoLoud _soloud = SoLoud.instance;
+  final AcousticCalibrationService _calibrationService = AcousticCalibrationService();
   final Map<String, AudioSource> _loadedSources = {};
   final Map<String, SoundHandle> _activeHandles = {};
 
@@ -26,41 +29,17 @@ class AudioEngineRepository {
       _soloud.filters.limiterFilter.threshold.value = -3.0;
       _soloud.filters.limiterFilter.outputCeiling.value = -0.1;
 
-      // Prepare Audio Capture for Room Calibration
-      await _soloud.audioCapture.init();
-      
-      debugPrint('SoLoud Audio Engine Initialized with Master Safety Limiter and Capture Interface');
+      debugPrint('SoLoud Audio Engine Initialized with Master Safety Limiter');
     } catch (e) {
       debugPrint('Failed to initialize SoLoud: $e');
     }
   }
 
-  /// Performs a 5-second capture of room noise floor and returns the FFT spectrum
+  /// Performs a real-time capture of room noise floor using FFT
   Future<List<double>> analyzeRoomNoise() async {
     if (!isInitialized) return [];
-    
     try {
-      // Start capturing from microphone
-      _soloud.audioCapture.start();
-      
-      // Accumulate FFT data for 3 seconds to average out transients
-      List<double> averageFft = List.filled(256, 0.0);
-      int samples = 0;
-      
-      final startTime = DateTime.now();
-      while (DateTime.now().difference(startTime).inSeconds < 3) {
-        final currentFft = _soloud.audioCapture.getFft();
-        for (int i = 0; i < 256; i++) {
-          averageFft[i] += currentFft[i];
-        }
-        samples++;
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
-      
-      _soloud.audioCapture.stop();
-      
-      // Calculate mean spectrum
-      return averageFft.map((val) => val / samples).toList();
+      return await _calibrationService.analyzeRoom();
     } catch (e) {
       debugPrint('Error during room analysis: $e');
       return [];
@@ -159,10 +138,10 @@ class AudioEngineRepository {
       final double freq = minFreq * math.pow(maxFreq / minFreq, toneFactor);
       
       // Butterworth Filter: Q = 0.707 for maximally flat passband
-      _soloud.filters.biquadFilter.activateOnSource(source);
-      _soloud.filters.biquadFilter.frequency(source).value = freq;
-      _soloud.filters.biquadFilter.resonance(source).value = 0.707;
-      _soloud.filters.biquadFilter.type(source).value = BiquadResonantFilterType.lowpass;
+      source.filters.biquadFilter.activate();
+      source.filters.biquadFilter.frequency(soundHandle: handle).value = freq;
+      source.filters.biquadFilter.resonance(soundHandle: handle).value = 0.707;
+      source.filters.biquadFilter.type(soundHandle: handle).value = 0.0; // 0.0 = LOWPASS
     } catch (e) {
       debugPrint('Error updating tone DSP: $e');
     }

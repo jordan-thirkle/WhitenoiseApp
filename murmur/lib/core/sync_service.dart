@@ -2,12 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 import 'package:cryptography/cryptography.dart';
+import 'pairing_service.dart';
+
+final syncServiceProvider = Provider<SyncService>((ref) => SyncService());
 
 class SyncService {
   static const String serviceType = '_murmur-sync._tcp';
   final String deviceName = Platform.localHostname;
+  final PairingService _pairingService = PairingService();
   
   Registration? _registration;
   Discovery? _discovery;
@@ -48,16 +53,30 @@ class SyncService {
   }
 
   Future<void> _connectToPeer(Service service) async {
-    // In a full implementation, we would resolve the IP and send our current favorites
-    // This is the Zero-Knowledge P2P foundation
+    // 2026 Zero-Knowledge P2P Foundation
+    // Initiate SPAKE2+ PASE handshake with discovered peer
+    final sessionKey = await _pairingService.establishSecureSession(
+      passcode: 'murmur-2026', // Standard local-first default
+      salt: service.name ?? 'default-salt',
+      iterations: 1000,
+    );
+
+    if (sessionKey != null) {
+      debugPrint('Secure Session Established with ${service.name}');
+      // Proceed to encrypted TCP sync...
+    }
   }
 
   Future<void> broadcastMix(String mixJson) async {
     // Broadcast updated mix to all discovered peers
   }
 
-  void stop() {
-    _registration?.dispose();
-    _discovery?.dispose();
+  Future<void> stop() async {
+    if (_registration != null) {
+      await unregister(_registration!);
+    }
+    if (_discovery != null) {
+      await stopDiscovery(_discovery!);
+    }
   }
 }
