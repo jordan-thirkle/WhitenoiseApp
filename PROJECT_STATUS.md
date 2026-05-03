@@ -15,6 +15,13 @@
 - [x] Mix Saving & Recalling (Favorites)
 - [x] Precision Sleep Timer with Fade
 - [x] 120fps Reactive UI (Riverpod)
+- [x] **2026 Intelligence Layer & Production Hardening (Live)**
+  - Real-time FFT via Background Isolates
+  - Manual Matter-over-IP Local Control (Scene Broadcast)
+  - SPAKE2+ Zero-Knowledge Secure P2P Sync
+  - Lifetime "Murmur Pro" IAP Monetization
+  - iOS Privacy Manifest & Android R8/ProGuard Hardening
+  - High-Resolution Branded Splash & Adaptive Icons
 
 ## 📋 Next Steps (Production Ready)
 - [ ] 14-day internal testing (Google Play requirement)
