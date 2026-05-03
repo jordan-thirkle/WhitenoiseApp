@@ -17,12 +17,22 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: MurmurTheme.background,
-      body: CustomScrollView(
-        slivers: [
-          _buildAppBar(context, ref),
-          _buildMixerHeader(context, ref),
-          _buildSoundGrid(context, ref),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+      body: Stack(
+        children: [
+          // Background Glow
+          Positioned(
+            top: -100,
+            left: -100,
+            child: _AmbientGlow(color: MurmurTheme.accent.withOpacity(0.05)),
+          ),
+          CustomScrollView(
+            slivers: [
+              _buildAppBar(context, ref),
+              _buildMixerHeader(context, ref),
+              _buildSoundGrid(context, ref),
+              const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+            ],
+          ),
         ],
       ),
       bottomNavigationBar: _buildBottomBar(context, ref),
@@ -65,20 +75,25 @@ class HomeScreen extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  timerState.isRunning 
-                    ? 'TIMER: ${_formatDuration(timerState.remaining!)}'
-                    : 'MULTI-TRACK MIXER',
-                  style: TextStyle(
-                    color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withOpacity(0.4),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    timerState.isRunning 
+                      ? 'TIMER: ${_formatDuration(timerState.remaining!)}'
+                      : 'MULTI-TRACK MIXER',
+                    key: ValueKey(timerState.isRunning),
+                    style: TextStyle(
+                      color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withOpacity(0.4),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  width: 40,
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  width: timerState.isRunning ? 80 : 40,
                   height: 3,
                   decoration: BoxDecoration(
                     color: timerState.isRunning ? MurmurTheme.accent : MurmurTheme.accent.withOpacity(0.3),
@@ -196,7 +211,7 @@ class HomeScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       alignment: Alignment.center,
-                      child: Text('$minsm', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text('${mins}m', style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   )
                 ).toList(),
@@ -458,7 +473,9 @@ class SoundCard extends ConsumerWidget {
     final state = ref.watch(soundCardProvider(sound.assetPath));
     final controller = ref.read(soundCardProvider(sound.assetPath).notifier);
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOutExpo,
       decoration: BoxDecoration(
         color: MurmurTheme.surface,
         borderRadius: BorderRadius.circular(24),
@@ -468,8 +485,8 @@ class SoundCard extends ConsumerWidget {
         ),
         boxShadow: state.isActive ? [
           BoxShadow(
-            color: MurmurTheme.accent.withOpacity(0.1),
-            blurRadius: 20,
+            color: MurmurTheme.accent.withOpacity(0.15),
+            blurRadius: 25,
             spreadRadius: 2,
           )
         ] : [],
@@ -481,15 +498,15 @@ class SoundCard extends ConsumerWidget {
             Expanded(
               child: GestureDetector(
                 onTap: controller.toggle,
+                behavior: HitTestBehavior.opaque,
                 child: Container(
                   width: double.infinity,
-                  color: Colors.transparent,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        sound.icon,
-                        style: const TextStyle(fontSize: 32),
+                      _PulseIcon(
+                        icon: sound.icon,
+                        isActive: state.isActive,
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -501,17 +518,27 @@ class SoundCard extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Icon(
-                        state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded,
-                        color: state.isActive ? MurmurTheme.accent : Colors.white24,
-                        size: 32,
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: Icon(
+                          state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded,
+                          key: ValueKey(state.isActive),
+                          color: state.isActive ? MurmurTheme.accent : Colors.white24,
+                          size: 32,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            if (state.isActive) _buildMixerControls(context, state, controller),
+            AnimatedCrossFade(
+              firstChild: const SizedBox(width: double.infinity),
+              secondChild: _buildMixerControls(context, state, controller),
+              crossFadeState: state.isActive ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+              sizeCurve: Curves.easeInOutExpo,
+            ),
           ],
         ),
       ),
@@ -564,6 +591,83 @@ class SoundCard extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PulseIcon extends StatefulWidget {
+  final String icon;
+  final bool isActive;
+  const _PulseIcon({required this.icon, required this.isActive});
+
+  @override
+  State<_PulseIcon> createState() => _PulseIconState();
+}
+
+class _PulseIconState extends State<_PulseIcon> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 1.15).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+    );
+
+    if (widget.isActive) _controller.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(_PulseIcon oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive != oldWidget.isActive) {
+      if (widget.isActive) {
+        _controller.repeat(reverse: true);
+      } else {
+        _controller.stop();
+        _controller.animateTo(0, duration: const Duration(milliseconds: 500));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scale,
+      child: Text(
+        widget.icon,
+        style: const TextStyle(fontSize: 32),
+      ),
+    );
+  }
+}
+
+class _AmbientGlow extends StatelessWidget {
+  final Color color;
+  const _AmbientGlow({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 400,
+      height: 400,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [color, Colors.transparent],
+        ),
+      ),
     );
   }
 }
