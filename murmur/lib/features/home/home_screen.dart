@@ -17,6 +17,9 @@ import 'package:murmur/core/neuro_stimulator.dart';
 import 'package:murmur/core/spatial_audio_service.dart';
 import 'package:murmur/core/sovereign_coach_service.dart';
 import 'package:murmur/core/eeg_hardware_service.dart';
+import 'package:murmur/core/codec_sep_engine.dart';
+import 'package:murmur/core/gnn_diagnostic_service.dart';
+import 'package:murmur/core/ephemeral_agent_service.dart';
 import 'package:murmur/core/snore_neutralizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -159,6 +162,18 @@ class HomeScreen extends ConsumerWidget {
                     ref.read(neuroStimulatorProvider).startNeuroDeepening();
                   },
                   tooltip: 'Neuro Sync',
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  constraints: const BoxConstraints(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.hearing_rounded, color: Colors.amberAccent, size: 20),
+                  onPressed: () {
+                    ref.read(codecSepEngineProvider).separateEnvironmentalStem("neighbor's dog");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('CodecSep: Muting neighbor\'s dog')),
+                    );
+                  },
+                  tooltip: 'Latent Sep',
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   constraints: const BoxConstraints(),
                 ),
