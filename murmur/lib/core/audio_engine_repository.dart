@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,7 @@ class AudioEngineRepository {
   final SoLoud _soloud = SoLoud.instance;
   final Map<String, AudioSource> _loadedSources = {};
   final Map<String, SoundHandle> _activeHandles = {};
-  
+
   bool get isInitialized => _soloud.isInitialized;
 
   Future<void> init() async {
@@ -35,29 +36,19 @@ class AudioEngineRepository {
     if (_loadedSources.containsKey(assetPath)) return;
     try {
       final source = await _soloud.loadAsset(assetPath);
-      
-      // Activate Biquad filter on the source level to enable per-handle control
-      source.filters.biquadFilter.activate();
-      
       _loadedSources[assetPath] = source;
     } catch (e) {
       debugPrint('Error loading sound $assetPath: $e');
     }
   }
 
-  Future<void> playSound(String assetPath, {double volume = 1.0, double tone = 1.0}) async {
-    if (!isInitialized) await init();
-    
-    if (!_loadedSources.containsKey(assetPath)) {
-      await loadSound(assetPath);
-    }
-
+  void playSound(String assetPath, {double volume = 0.5, double tone = 1.0}) {
+    if (!isInitialized) return;
     final source = _loadedSources[assetPath];
     if (source == null) return;
 
-    stopSound(assetPath);
-
     try {
+      // In 4.x, play is synchronous
       final handle = _soloud.play(source, volume: volume, looping: true);
       _activeHandles[assetPath] = handle;
       _updateTone(source, handle, tone);
@@ -116,30 +107,32 @@ class AudioEngineRepository {
     }
   }
 
-  void updateTone(String assetPath, double tone) {
-    final handle = _activeHandles[assetPath];
+  void updateTone(String assetPath, double toneFactor) {
     final source = _loadedSources[assetPath];
-    if (handle != null && source != null) {
-      _updateTone(source, handle, tone);
+    final handle = _activeHandles[assetPath];
+    if (source != null && handle != null) {
+      _updateTone(source, handle, toneFactor);
     }
   }
 
-  void _updateTone(AudioSource source, SoundHandle handle, double tone) {
+  void _updateTone(AudioSource source, SoundHandle handle, double toneFactor) {
     try {
-      // In 4.0.3, use the object-oriented filter API
-      source.filters.biquadFilter.type(soundHandle: handle).value = 0; // Low-pass
+      // Logarithmic mapping for natural frequency attenuation (400Hz to 16000Hz)
+      // Human hearing perceives frequency on a log scale.
+      final double minFreq = 400.0;
+      final double maxFreq = 16000.0;
+      final double freq = minFreq * math.pow(maxFreq / minFreq, toneFactor);
       
-      // Range: 10Hz to 16000Hz
-      final frequency = 10.0 + (tone * 15990.0);
-      source.filters.biquadFilter.frequency(soundHandle: handle).value = frequency;
-      
-      // Resonance (standard 0.1 to 20 range)
-      source.filters.biquadFilter.resonance(soundHandle: handle).value = 0.1;
+      // Butterworth Filter: Q = 0.707 for maximally flat passband
+      _soloud.filters.biquadFilter.activateOnSource(source);
+      _soloud.filters.biquadFilter.frequency(source).value = freq;
+      _soloud.filters.biquadFilter.resonance(source).value = 0.707;
+      _soloud.filters.biquadFilter.type(source).value = BiquadResonantFilterType.lowpass;
     } catch (e) {
-      debugPrint('Error updating tone filter: $e');
+      debugPrint('Error updating tone DSP: $e');
     }
   }
-  
+
   void dispose() {
     try {
       _soloud.deinit();

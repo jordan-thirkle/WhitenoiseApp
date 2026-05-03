@@ -113,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            child: const Text('UNLOCK PREMIUM — $9.99', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('UNLOCK PREMIUM — \$9.99', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
         const SizedBox(height: 16),
