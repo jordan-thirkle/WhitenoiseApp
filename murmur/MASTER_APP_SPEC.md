@@ -64,44 +64,43 @@
   - **HRAP (Home Router Access Point)**: Standardized Thread credential sharing for multi-hub reliability.
   - **Energy Reporting**: Real-time efficiency metrics for noise-masking speaker groups.
   - **Kinetic Orchestration (Matter 1.5/1.6)**: Standardized control for adjustable beds; 7.5-degree head elevation trigger upon sustained snore detection.
+  - **Shared-Memory Multithreading (isolateGroupBound)**: Dart 3.9+ zero-latency memory sharing for real-time neuro-stimulation pulses.
 
-## 8. Health Ecosystem Integration (2026 Standard)
+## 8. Health Ecosystem Integration (2026/2027 Standard)
 - **Apple HealthKit (iOS 26.4)**:
   - **Sleep Analysis**: Integration with `HKCategoryTypeIdentifier.sleepAnalysis`.
-  - **Bedtime Consistency**: Visualization of variance against 2-week averages.
+  - **PHRTF Scanning**: Integration with TrueDepth/LiDAR ear-scanning APIs for personalized spatial audio.
   - **Blood Oxygenation (SpO2)**: Real-time SpO2 curve integration for respiratory masking triggers.
-  - **Daily Sleep Score**: Correlation with watchOS 26 recovery metrics (0-100).
+- **Daily Sleep Score**: Correlation with watchOS 26 recovery metrics (0-100).
 - **Google Health Connect (Android 17)**:
   - **SleepSessionRecord**: Support for granular sleep stages and **Hypnodensity Probability** data.
   - **Vitals Integration**: Blood Oxygen and Respiratory Rate curves for predictive screening.
-- **Predictive Health Screening**: 
-  - AI-driven analysis of vitals to flag early signs of 130+ cardiac/respiratory conditions.
-  - "Proactive Health Report" generation for clinical bridge support.
+- **Sovereign Coach (On-Device LLM)**:
+  - Multimodal LLM (PH-LLM / Edge Veda) for conversational recovery debriefs.
+  - Autonomous mixer adjustment based on 30-day biometric longitudinal reasoning.
 
-## 9. Biometric Intelligence Loop (2026 Update)
-- **Probabilistic Hypnodensity**: Transition from rigid sleep stages to probability-based visualization (addressing the ~28% uncertainty epoch range).
-- **SpO2 Adaptive Masking**: Automated enhancement of "Deep Brown" noise intensity upon sustained SpO2 drops during the night.
+## 9. Biometric Intelligence Loop (Sovereign Update)
+- **Closed-Loop Auditory Stimulation (CLAS)**: 
+  - Real-time delta wave detection ($0.5-1.5$ Hz) with phase-locked pink noise bursts.
+  - Mean detection-to-stimulation latency targeting $< 20.5$ ms.
+- **Personalized Spatial Audio (PHRTF)**: 81% improved localization accuracy via user-specific HRTF reconstruction.
+- **SpO2 Adaptive Masking**: Automated enhancement of "Deep Brown" noise intensity upon sustained SpO2 drops.
 
 ## 10. Implementation Roadmap
-- **Phase 5 (Complete)**: AAA++ Final Gap (NAC, Snore Neutralization, MCP).
-- **Phase 6 (Strategic - Ultra-AAA++ "Proactive Sleeper")**:
-  - **Ethical AI (C2PA)**: Embedding digital provenance signatures in all on-device NAC synthesis.
-  - **Kinetic Mitigation**: Direct Matter control of bed headboards for airway obstruction relief.
-  - **Hypnodensity Visualization**: AI-driven probabilistic charts for medically-accurate sleep reporting.
+- **Phase 6 (Complete)**: Ultra-AAA++ "Proactive Sleeper" (C2PA, Kinetic Intervention).
+- **Phase 7 (Strategic - Sovereign Tier 2027)**:
+  - **Neuro-Stimulation (CLAS)**: Active deepening of N3 sleep stages via phase-locked pulse orchestration.
+  - **Spatial Scanner (PHRTF)**: TrueDepth-based head/ear geometry reconstruction for 3D acoustic immersion.
+  - **Sovereign Coach**: Integration of on-device multimodal LLM for conversational health insights.
 
-## 11. Core Intelligence Pillars (2026 Edition)
-### 11.1 Neural Synthesis (NAC) & C2PA
-- **Engine**: On-device micro-model for real-time NAC decoding.
-- **Provenance**: C2PA metadata embedding to prove on-device synthesis and ethical AI compliance.
+## 11. Core Intelligence Pillars (2027 Edition)
+### 11.1 Neuro-Stimulation (CLAS)
+- **Pulse Type**: Pink Noise bursts (50ms duration) phase-locked to slow-oscillation "up-phases."
+- **Benefit**: Enhanced memory consolidation and deeper SWS (Slow Wave Sleep) duration.
 
-### 11.2 Active Snore Neutralization & Kinetic Intervention
-- **Detection**: Frequency/Amplitude analysis of snore patterns via background isolates.
-- **Acoustic**: Real-time generation of phase-inverted waves ($\phi$) to diminish perception.
-- **Kinetic**: Triggering 7.5-degree head elevation on Matter-compatible bed clusters (Phase 6).
-
-### 11.3 Agentic Control (MCP)
-- **Interface**: Structured MCP server exposing calibration data and mixer state.
-- **Multi-hop Reasoning**: Enabling AI agents to adjust environments based on cross-app biometric signals (e.g., SpO2 drops).
+### 11.2 Sovereign Coach (LLM)
+- **Architecture**: Local-only inference using quantized PH-LLM or Edge Veda weights.
+- **Function**: Multimodal ingestion of vitals for proactive health screening (130+ conditions).
 
 ## 12. Dependency Matrix
 - `flutter_soloud`: Core Audio Engine
@@ -109,6 +108,6 @@
 - `nsd`: Device Discovery
 - `spake2plus`: Secure Pairing
 - `health`: Biometric Integration
-- `tflite_flutter`: Neural Synthesis (NAC) Inference
+- `tflite_flutter`: Neural Synthesis (NAC) & LLM Inference
 - `cryptography`: Secure Transport
 - `google_fonts`: Typography (Inter)
