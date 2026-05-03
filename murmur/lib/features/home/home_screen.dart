@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/models/sound_model.dart';
 import 'package:murmur/features/audio/sound_card_controller.dart';
+import 'package:murmur/core/audio_engine_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -93,7 +94,8 @@ class HomeScreen extends ConsumerWidget {
           ),
           TextButton.icon(
             onPressed: () {
-              // TODO: Implement "Stop All"
+              ref.read(audioEngineProvider).stopAll();
+              // TODO: Also reset the UI state of all SoundCards
             },
             icon: const Icon(Icons.stop_rounded, size: 16, color: Colors.redAccent),
             label: const Text("STOP ALL", style: TextStyle(color: Colors.redAccent, fontSize: 10)),

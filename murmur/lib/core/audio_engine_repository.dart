@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AudioEngineRepository {
   static final AudioEngineRepository _instance = AudioEngineRepository._internal();
@@ -17,7 +18,13 @@ class AudioEngineRepository {
     if (isInitialized) return;
     try {
       await _soloud.init();
-      debugPrint('SoLoud Audio Engine Initialized');
+      
+      // Initialize Master Safety Limiter to prevent clipping during multi-track mixing
+      _soloud.filters.limiterFilter.activate();
+      _soloud.filters.limiterFilter.threshold.value = -3.0;
+      _soloud.filters.limiterFilter.outputCeiling.value = -0.1;
+      
+      debugPrint('SoLoud Audio Engine Initialized with Master Safety Limiter');
     } catch (e) {
       debugPrint('Failed to initialize SoLoud: $e');
     }
@@ -66,6 +73,17 @@ class AudioEngineRepository {
     }
   }
 
+  void stopAll() {
+    for (final handle in _activeHandles.values) {
+      try {
+        _soloud.stop(handle);
+      } catch (e) {
+        debugPrint('Error stopping handle during stopAll: $e');
+      }
+    }
+    _activeHandles.clear();
+  }
+
   void updateVolume(String assetPath, double volume) {
     final handle = _activeHandles[assetPath];
     if (handle != null) {
@@ -105,3 +123,5 @@ class AudioEngineRepository {
     }
   }
 }
+
+final audioEngineProvider = Provider((ref) => AudioEngineRepository());
