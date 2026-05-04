@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:murmur/core/audit_logger.dart';
-// Note: In production, this uses 'package:health/health.dart'
-// and 'package:health_connect/health_connect.dart'
+import 'package:url_launcher/url_launcher.dart';
 
 final healthServiceProvider = Provider((ref) => HealthService(ref));
 
@@ -10,72 +8,21 @@ class HealthService {
   final Ref _ref;
   HealthService(this._ref);
 
-  /// 2026 AAA++: Biometric Feedback Loop
-  /// Fetches the latest sleep score and adjusts the audio mixer profile.
-  Future<void> syncBiometricFeedback() async {
-    debugPrint('AAA++ Intelligence: Syncing Biometric Feedback (Android 17 / iOS 26.4)...');
-    
-    // 2026: Probabilistic Hypnodensity Charting
-    final hypnodensity = await _fetchHypnodensityEpoch();
-    
-    _ref.read(auditLoggerProvider).logPhiAccess(
-      agentId: 'SovereignCoachV1',
-      dataType: 'Hypnodensity/SpO2/SleepBiometrics',
-      purpose: 'Biometric Feedback Optimization',
-    );
+  /// Synchronizes sleep duration with the system health app.
+  /// This is a wellness-focused feature to help users track their rest goals.
+  Future<void> syncSleepSession(Duration duration) async {
+    debugPrint('Wellness: Syncing sleep duration ($duration) to System Health...');
+    // In production, this calls health.writeHealthData()
+    // focusing exclusively on Sleep Duration (Wellness category).
+  }
 
-    debugPrint('AAA++ Intelligence: Current Epoch Probabilities: $hypnodensity');
-
-    final sleepScore = await _fetchLatestSleepScore();
-    final consistency = await _fetchBedtimeConsistency();
-    final spO2 = await _fetchCurrentSpO2();
-    
-    if (sleepScore < 70 || consistency < 0.8 || spO2 < 94) {
-      debugPrint('AAA++ Intelligence: Physiological stress detected (SpO2: $spO2%). Shielding user with Deep Brown noise...');
-      _optimizeMixForRecovery();
+  /// Deep-links to the system health dashboard so users can manage their rest data.
+  Future<void> openHealthDashboard() async {
+    final Uri healthUri = Uri.parse('x-apple-health://');
+    if (await canLaunchUrl(healthUri)) {
+      await launchUrl(healthUri);
     } else {
-      debugPrint('AAA++ Intelligence: Optimal recovery. Maintaining standard profile.');
+      debugPrint('Wellness: Unable to launch System Health app.');
     }
-  }
-
-  Future<Map<String, double>> _fetchHypnodensityEpoch() async {
-    // 2026 Probabilistic AI Output
-    return {'N3': 0.72, 'REM': 0.15, 'CORE': 0.13};
-  }
-
-  Future<int> _fetchCurrentSpO2() async {
-    // iOS 26 / watchOS 26: Real-time Blood Oxygen
-    return 93; // Simulated drop
-  }
-
-  /// Predictive Health Screening
-  /// Screens vitals for 130+ cardiac/respiratory conditions.
-  Future<void> generateProactiveHealthReport() async {
-    debugPrint('AAA++ Intelligence: Generating Proactive Health Report (130+ Conditions)...');
-    // AI-driven longitudinal analysis of HRV, SpO2, and respiratory rate
-  }
-
-  Future<double> _fetchBedtimeConsistency() async {
-    // iOS 26.4 Bedtime Consistency Highlight
-    return 0.75; // Simulated variance
-  }
-
-  Future<int> _fetchLatestSleepScore() async {
-    // Placeholder for HealthKit / Health Connect incremental sync
-    await Future.delayed(const Duration(milliseconds: 500));
-    return 65; // Simulated low score for demonstration
-  }
-
-  void _optimizeMixForRecovery() {
-    // Logic to automatically boost low-frequency masking components
-    // for deep sleep (N3) enhancement.
-    debugPrint('AAA++ Intelligence: Frequency profile optimized for N3 enhancement.');
-  }
-
-  /// Deep-linking to system health page
-  void openHealthDashboard() {
-    // x-apple-health:// (iOS)
-    // android.intent.action.VIEW (Google Health Connect)
-    debugPrint('AAA++ Intelligence: Deep-linking to System Health Dashboard...');
   }
 }

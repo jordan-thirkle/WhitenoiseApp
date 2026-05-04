@@ -5,15 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart'; // To access global audioHandler
 
-import 'calibration_service.dart';
-
 class AudioEngineRepository {
   static final AudioEngineRepository _instance = AudioEngineRepository._internal();
   factory AudioEngineRepository() => _instance;
   AudioEngineRepository._internal();
 
   final SoLoud _soloud = SoLoud.instance;
-  final AcousticCalibrationService _calibrationService = AcousticCalibrationService();
   final Map<String, AudioSource> _loadedSources = {};
   final Map<String, SoundHandle> _activeHandles = {};
 
@@ -35,17 +32,6 @@ class AudioEngineRepository {
     }
   }
 
-  /// Performs a real-time capture of room noise floor using FFT
-  Future<List<double>> analyzeRoomNoise() async {
-    if (!isInitialized) return [];
-    try {
-      return await _calibrationService.analyzeRoom();
-    } catch (e) {
-      debugPrint('Error during room analysis: $e');
-      return [];
-    }
-  }
-
   Future<void> loadSound(String assetPath) async {
     if (_loadedSources.containsKey(assetPath)) return;
     try {
@@ -62,7 +48,6 @@ class AudioEngineRepository {
     if (source == null) return;
 
     try {
-      // In 4.x, play is synchronous
       final handle = _soloud.play(source, volume: volume, looping: true);
       _activeHandles[assetPath] = handle;
       _updateTone(source, handle, tone);
@@ -132,12 +117,10 @@ class AudioEngineRepository {
   void _updateTone(AudioSource source, SoundHandle handle, double toneFactor) {
     try {
       // Logarithmic mapping for natural frequency attenuation (400Hz to 16000Hz)
-      // Human hearing perceives frequency on a log scale.
       final double minFreq = 400.0;
       final double maxFreq = 16000.0;
       final double freq = minFreq * math.pow(maxFreq / minFreq, toneFactor);
       
-      // Butterworth Filter: Q = 0.707 for maximally flat passband
       source.filters.biquadFilter.activate();
       source.filters.biquadFilter.frequency(soundHandle: handle).value = freq;
       source.filters.biquadFilter.resonance(soundHandle: handle).value = 0.707;
