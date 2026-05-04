@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/audit_logger.dart';
 // Note: In production, this uses 'package:health/health.dart'

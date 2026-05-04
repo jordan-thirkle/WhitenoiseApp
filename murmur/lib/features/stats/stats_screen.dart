@@ -140,7 +140,7 @@ class StatsScreen extends ConsumerWidget {
       children: [
         _buildMetricCard('Avg SpO2', '96%', Icons.bloodtype_rounded, Colors.redAccent),
         _buildMetricCard('Heart Rate', '54 bpm', Icons.favorite_rounded, Colors.pinkAccent),
-        _buildMetricCard('Delta Power', '+12%', Icons.Bolt_rounded, Colors.amberAccent),
+        _buildMetricCard('Delta Power', '+12%', Icons.bolt_rounded, Colors.amberAccent),
         _buildMetricCard('CLAS Hits', '242', Icons.hearing_rounded, Colors.greenAccent),
       ],
     );

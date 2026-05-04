@@ -218,7 +218,7 @@ class HomeScreen extends ConsumerWidget {
                               const SizedBox(width: 4),
                               Text(
                                 'LINK: ${(sqi * 100).toInt()}%',
-                                style: MurmurTheme.secondaryText.copyWith(fontSize: 10, letterSpacing: 0.5),
+                                style: MurmurTheme.secondaryTextStyle.copyWith(fontSize: 10, letterSpacing: 0.5),
                               ),
                             ],
                           ),
@@ -530,8 +530,10 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 
   void _showFavoritesSheet(BuildContext context, WidgetRef ref) {
     final mixes = ref.watch(mixControllerProvider);

@@ -12,6 +12,7 @@ class MurmurTheme {
   static Color get surface => surfaceColor;
   static Color get accent => accentColor;
   static const Color secondaryText = textSecondary;
+  static final TextStyle secondaryTextStyle = GoogleFonts.inter(color: textSecondary);
 
   static const double baseRadius = 28.0;
   static final BorderRadius cardRadius = BorderRadius.circular(24.0);
