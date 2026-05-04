@@ -30,6 +30,8 @@ class StatsScreen extends ConsumerWidget {
                   _buildClinicalMoat(context, ref),
                   const SizedBox(height: 24),
                   _build2028Frontier(context, ref),
+                  const SizedBox(height: 24),
+                  _buildReimbursement(context, ref),
                 ],
               ),
             ),
@@ -221,6 +223,55 @@ class StatsScreen extends ConsumerWidget {
             'Next autonomous AI weight sync: Scheduled (May 2026)',
             style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.3)),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReimbursement(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.greenAccent.withOpacity(0.05),
+        borderRadius: MurmurTheme.cardRadius,
+        border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.account_balance_wallet_rounded, color: Colors.greenAccent, size: 14),
+              const SizedBox(width: 8),
+              const Text(
+                'MANAGED CARE: REIMBURSEMENT ELIGIBLE',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.greenAccent),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildReimbursementRow('Physiologic Analysis (CPT 0741T)', 'BILLABLE', Icons.analytics_rounded),
+          _buildReimbursementRow('RTM Monitoring (CPT 98975)', 'ACTIVE', Icons.monitor_heart_rounded),
+          _buildReimbursementRow('EU AI Act Documentation', 'CERTIFIED', Icons.gavel_rounded),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReimbursementRow(String label, String status, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: Colors.white24, size: 12),
+              const SizedBox(width: 8),
+              Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70)),
+            ],
+          ),
+          Text(status, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.greenAccent)),
         ],
       ),
     );

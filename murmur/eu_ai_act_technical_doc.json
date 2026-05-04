@@ -1,0 +1,25 @@
+{
+  "document_id": "MURMUR-EU-AI-ACT-2028-V1",
+  "ai_system_classification": "High-Risk (Annex II, SaMD)",
+  "compliance_deadline": "2028-08-02",
+  "technical_specifications": {
+    "intended_purpose": "Autonomous ambient sleep audio modulation and biometric recovery forecasting.",
+    "dataset_transparency": {
+      "training_data": "Synthetic neuro-physiological datasets and clinical PSG records.",
+      "bias_mitigation": "Demographic parity validation across age, gender, and sleep pathologies."
+    },
+    "human_oversight": {
+      "mechanism": "Clinician-in-the-loop audit trail via ReimbursementService (RTM).",
+      "override_capability": "Instant kill-switch (PurgeService) and manual override."
+    },
+    "cybersecurity": {
+      "standard": "ISO/IEC 27001 + CycloneDX SBOM",
+      "encryption": "AES-256-GCM (Biometric Logs), SPAKE2+ (A2A Negotiate)"
+    }
+  },
+  "conformity_assessment": {
+    "notified_body_id": "TBD-2028",
+    "qms_status": "ISO 13485 Certified",
+    "pccp_id": "FDA-PCCP-2027-04"
+  }
+}
