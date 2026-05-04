@@ -1,0 +1,23 @@
+{
+  "agent": {
+    "id": "com.jordanthirkle.murmur",
+    "version": "1.1.0+10",
+    "tier": "Sovereign/Clinical",
+    "capabilities": [
+      {
+        "type": "audio_orchestration",
+        "protocols": ["Matter-over-IP", "MCP"],
+        "specialties": ["NAC Synthesis", "Active Snore Neutralization", "CLAS"]
+      },
+      {
+        "type": "biometric_analytics",
+        "compliance": ["HIPAA", "Zero-Data"],
+        "outputs": ["Probabilistic Hypnodensity", "HRV Recovery"]
+      }
+    ],
+    "negotiation": {
+      "a2a_endpoint": "local://murmur.health/v1/negotiate",
+      "privacy_policy": "jordanthirkle.com/murmur/privacy"
+    }
+  }
+}

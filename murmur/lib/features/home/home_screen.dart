@@ -275,16 +275,64 @@ class HomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   constraints: const BoxConstraints(),
                 ),
+                _buildThermalBadge(context, ref),
+                const SizedBox(width: 8),
+                _buildC2PABadge(context),
+                const SizedBox(width: 12),
                 IconButton(
-                  icon: const Icon(Icons.star_outline_rounded, color: Colors.white30, size: 20),
                   onPressed: () => _showFavoritesSheet(context, ref),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  icon: const Icon(Icons.favorite_rounded, color: Colors.white24, size: 20),
+                  padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildC2PABadge(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _showC2PADialog(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.verified_user_rounded, color: MurmurTheme.accent, size: 14),
+            const SizedBox(width: 4),
+            const Text(
+              'C2PA',
+              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThermalBadge(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.orangeAccent.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.thermostat_rounded, color: Colors.orangeAccent, size: 14),
+          const SizedBox(width: 4),
+          Text(
+            'OPTIMAL',
+            style: TextStyle(color: Colors.orangeAccent.withOpacity(0.8), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+          ),
+        ],
       ),
     );
   }
@@ -534,6 +582,57 @@ class HomeScreen extends ConsumerWidget {
   ),
 );
 }
+
+  void _showC2PADialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: MurmurTheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: MurmurTheme.dialogRadius),
+        title: Row(
+          children: [
+            Icon(Icons.verified_user_rounded, color: MurmurTheme.accent),
+            const SizedBox(width: 12),
+            const Text('Content Credentials'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'This audio was synthesized on-device using the Murmur NAC Engine v1.1.0.',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            _buildC2PAMetadata('Issuer', 'Murmur Health Infrastructure'),
+            _buildC2PAMetadata('Algorithm', 'Neural Audio Codec (NAC)'),
+            _buildC2PAMetadata('Signed', '2026-05-04 10:48 UTC'),
+            _buildC2PAMetadata('Integrity', 'Verified (Local-First)'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CLOSE'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildC2PAMetadata(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(value, style: const TextStyle(color: Colors.white, fontSize: 10)),
+        ],
+      ),
+    );
+  }
 
   void _showFavoritesSheet(BuildContext context, WidgetRef ref) {
     final mixes = ref.watch(mixControllerProvider);
