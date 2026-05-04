@@ -28,6 +28,8 @@ class StatsScreen extends ConsumerWidget {
                   _buildMetricGrid(),
                   const SizedBox(height: 24),
                   _buildClinicalMoat(context, ref),
+                  const SizedBox(height: 24),
+                  _build2028Frontier(context, ref),
                 ],
               ),
             ),
@@ -219,6 +221,55 @@ class StatsScreen extends ConsumerWidget {
             'Next autonomous AI weight sync: Scheduled (May 2026)',
             style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.3)),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _build2028Frontier(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.deepPurpleAccent.withOpacity(0.05),
+        borderRadius: MurmurTheme.cardRadius,
+        border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.psychology_rounded, color: Colors.deepPurpleAccent, size: 14),
+              const SizedBox(width: 8),
+              const Text(
+                '2028 FRONTIER: FUTURE-SOVEREIGN',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.deepPurpleAccent),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildFrontierRow('Digital Twin Instance (DTI)', 'ACTIVE', Icons.supervised_user_circle_rounded),
+          _buildFrontierRow('TUS Neuromodulation Hook', 'READY', Icons.gps_fixed_rounded),
+          _buildFrontierRow('Agentic QA Self-Healing', '93% RELIABILITY', Icons.auto_fix_high_rounded),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFrontierRow(String label, String status, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: Colors.white24, size: 12),
+              const SizedBox(width: 8),
+              Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70)),
+            ],
+          ),
+          Text(status, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent)),
         ],
       ),
     );
