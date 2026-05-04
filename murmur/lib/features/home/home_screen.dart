@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/models/sound_model.dart';
 import 'package:murmur/features/audio/sound_card_controller.dart';
@@ -98,7 +99,7 @@ class HomeScreen extends ConsumerWidget {
           ),
         IconButton(
           icon: const Icon(Icons.info_outline_rounded, color: Colors.white70, size: 20),
-          onPressed: () => _showAboutDialog(context),
+          onPressed: () => _showPhilosophyDialog(context),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
         ),
@@ -187,16 +188,17 @@ class HomeScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orangeAccent.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.orangeAccent.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.orangeAccent.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.thermostat_rounded, color: Colors.orangeAccent, size: 14),
+          const Icon(Icons.thermostat_rounded, color: Colors.orangeAccent, size: 12),
           const SizedBox(width: 4),
           Text(
-            'OPTIMAL',
-            style: TextStyle(color: Colors.orangeAccent.withOpacity(0.8), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+            'THERMAL: OPTIMAL',
+            style: TextStyle(color: Colors.orangeAccent.withOpacity(0.9), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
           ),
         ],
       ),
@@ -208,6 +210,86 @@ class HomeScreen extends ConsumerWidget {
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
+  }
+
+  void _showPhilosophyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          backgroundColor: MurmurTheme.surface.withOpacity(0.8),
+          shape: RoundedRectangleBorder(
+            borderRadius: MurmurTheme.cardRadius,
+            side: const BorderSide(color: Colors.white10),
+          ),
+          title: Text(
+            'MIXING PHILOSOPHY',
+            style: GoogleFonts.inter(
+              color: MurmurTheme.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildPhilosophyItem(
+                Icons.waves_rounded,
+                'Spatial Ambient',
+                'Tracks are architected with distinct frequency bands to prevent "acoustic mud" and ensure maximum clarity.',
+              ),
+              const SizedBox(height: 16),
+              _buildPhilosophyItem(
+                Icons.thermostat_rounded,
+                'Thermal First',
+                'Engineered for 8-hour sessions with minimal CPU overhead, preserving battery and device longevity.',
+              ),
+              const SizedBox(height: 16),
+              _buildPhilosophyItem(
+                Icons.offline_bolt_rounded,
+                'Sovereign Design',
+                'No cloud. No data collection. Your soundscapes are synthesized and mixed 100% on-device.',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('UNDERSTOOD', style: TextStyle(color: MurmurTheme.accent, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhilosophyItem(IconData icon, String title, String description) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: MurmurTheme.accent, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title.toUpperCase(),
+                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11, height: 1.4),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   void _showTimerSheet(BuildContext context, WidgetRef ref) {
