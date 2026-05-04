@@ -447,6 +447,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [15, 30, 45, 60, 90, 120].map((mins) => 
                   InkWell(
                     onTap: () {
+                      HapticFeedback.selectionClick();
                       timerNotifier.setTimer(mins);
                       Navigator.pop(context);
                     },

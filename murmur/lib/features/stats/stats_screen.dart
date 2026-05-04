@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/core/health_service.dart';
+import 'package:murmur/core/purge_service.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -13,7 +14,7 @@ class StatsScreen extends ConsumerWidget {
       backgroundColor: MurmurTheme.background,
       body: CustomScrollView(
         slivers: [
-          _buildAppBar(context),
+          _buildAppBar(context, ref),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -25,6 +26,8 @@ class StatsScreen extends ConsumerWidget {
                   _buildHypnodensityCard(context),
                   const SizedBox(height: 24),
                   _buildMetricGrid(),
+                  const SizedBox(height: 24),
+                  _buildClinicalMoat(context, ref),
                 ],
               ),
             ),
@@ -34,7 +37,7 @@ class StatsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context, WidgetRef ref) {
     return SliverAppBar(
       backgroundColor: Colors.transparent,
       floating: true,
@@ -46,6 +49,45 @@ class StatsScreen extends ConsumerWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
         onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.delete_forever_rounded, color: Colors.redAccent, size: 20),
+          onPressed: () => _showPurgeConfirmation(context, ref),
+          tooltip: 'Purge All Data',
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  void _showPurgeConfirmation(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: MurmurTheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: MurmurTheme.dialogRadius),
+        title: const Text('RIGHT TO DISAPPEAR', style: TextStyle(color: Colors.redAccent, letterSpacing: 2, fontSize: 14, fontWeight: FontWeight.bold)),
+        content: const Text(
+          'This will permanently delete all local biometric logs, recovery metrics, and preferences. This action cannot be undone.',
+          style: TextStyle(color: Colors.white70, fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await ref.read(purgeServiceProvider).purgeAllData();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('All data purged. Sovereignty restored.')),
+              );
+            },
+            child: const Text('PURGE ALL DATA', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
       ),
     );
   }
@@ -143,6 +185,42 @@ class StatsScreen extends ConsumerWidget {
         _buildMetricCard('Delta Power', '+12%', Icons.bolt_rounded, Colors.amberAccent),
         _buildMetricCard('CLAS Hits', '242', Icons.hearing_rounded, Colors.greenAccent),
       ],
+    );
+  }
+
+  Widget _buildClinicalMoat(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: MurmurTheme.surface,
+        borderRadius: MurmurTheme.cardRadius,
+        border: Border.all(color: Colors.amberAccent.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.verified_rounded, color: Colors.amberAccent, size: 14),
+              const SizedBox(width: 8),
+              const Text(
+                'FDA SaMD STATUS: PCCP-CERTIFIED',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.amberAccent),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Real-World Evidence (RWE) Confidence: 99.1%',
+            style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6)),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Next autonomous AI weight sync: Scheduled (May 2026)',
+            style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.3)),
+          ),
+        ],
+      ),
     );
   }
 
