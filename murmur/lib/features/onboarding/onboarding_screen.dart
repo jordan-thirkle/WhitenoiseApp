@@ -18,9 +18,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingData> _pages = [
     OnboardingData(
-      title: 'SCIENTIFIC SLEEP',
-      description: 'Medical-grade ambient audio designed to mask disruptive noise and stabilize sleep cycles.',
-      icon: '🧬',
+      title: 'ACOUSTIC DESIGN',
+      description: 'High-fidelity ambient audio engineered to mask disruptive noise and promote a stable wellness environment.',
+      icon: '🎵',
     ),
     OnboardingData(
       title: 'ZERO-DATA PRIVACY',

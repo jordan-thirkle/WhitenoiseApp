@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audio_service/audio_service.dart';
@@ -19,6 +20,16 @@ late AudioHandler audioHandler;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // 2026 Premium Utility: Edge-to-Edge / Android 16 Compliance
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent,
+    statusBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light,
+  ));
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
   // Initialize Shared Preferences
   final prefs = await SharedPreferences.getInstance();
   final bool onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
