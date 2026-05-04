@@ -11,16 +11,7 @@ import 'package:murmur/features/audio/mix_controller.dart';
 import 'package:murmur/models/mix_model.dart';
 import 'package:murmur/features/audio/timer_controller.dart';
 import 'package:murmur/core/iap_service.dart';
-import 'package:murmur/core/matter_service.dart';
 import 'package:murmur/core/health_service.dart';
-import 'package:murmur/core/neuro_stimulator.dart';
-import 'package:murmur/core/spatial_audio_service.dart';
-import 'package:murmur/core/sovereign_coach_service.dart';
-import 'package:murmur/core/eeg_hardware_service.dart';
-import 'package:murmur/core/codec_sep_engine.dart';
-import 'package:murmur/core/gnn_diagnostic_service.dart';
-import 'package:murmur/core/ephemeral_agent_service.dart';
-import 'package:murmur/core/snore_neutralizer.dart';
 import 'package:murmur/features/stats/stats_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -158,89 +149,6 @@ class HomeScreen extends ConsumerWidget {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.info_outline_rounded, color: Colors.white38, size: 16),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Ethical AI: NACEngine (C2PA Signed)')),
-                    );
-                  },
-                  tooltip: 'C2PA Content Credentials',
-                  visualDensity: VisualDensity.comfortable,
-                  padding: const EdgeInsets.all(12),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.psychology_rounded, color: Colors.deepPurpleAccent, size: 20),
-                  onPressed: () {
-                    ref.read(neuroStimulatorProvider).startNeuroDeepening();
-                  },
-                  tooltip: 'Neuro Sync',
-                  visualDensity: VisualDensity.comfortable,
-                  padding: const EdgeInsets.all(12),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.hearing_rounded, color: Colors.amberAccent, size: 20),
-                  onPressed: () {
-                    ref.read(codecSepEngineProvider).separateEnvironmentalStem("neighbor's dog");
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('CodecSep: Muting neighbor\'s dog')),
-                    );
-                  },
-                  tooltip: 'Latent Sep',
-                  visualDensity: VisualDensity.comfortable,
-                  padding: const EdgeInsets.all(12),
-                ),
-                // Neuro-Link Status (SQI / Target Rate)
-                Consumer(
-                  builder: (context, ref, _) {
-                    final eeg = ref.watch(eegHardwareServiceProvider);
-                    return ValueListenableBuilder<double>(
-                      valueListenable: eeg.signalQuality,
-                      builder: (context, sqi, _) {
-                        if (sqi == 0) return const SizedBox.shrink();
-                        return Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurpleAccent.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.3)),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: const BoxDecoration(
-                                  color: Colors.greenAccent,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'LINK: ${(sqi * 100).toInt()}%',
-                                style: MurmurTheme.secondaryTextStyle.copyWith(fontSize: 10, letterSpacing: 0.5),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(width: 8), // Increased hit-box buffer
-                IconButton(
-                  icon: const Icon(Icons.security_rounded, color: Colors.tealAccent, size: 20),
-                  onPressed: () {
-                    ref.read(snoreNeutralizerProvider).enableActiveMasking();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Active Snore Guard Armed')),
-                    );
-                  },
-                  tooltip: 'Snore Guard',
-                  visualDensity: VisualDensity.comfortable,
-                  padding: const EdgeInsets.all(12),
-                ),
-                IconButton(
                   icon: const Icon(Icons.favorite_rounded, color: Colors.pinkAccent, size: 20),
                   onPressed: () {
                     ref.read(healthServiceProvider).openHealthDashboard();
@@ -248,22 +156,6 @@ class HomeScreen extends ConsumerWidget {
                   tooltip: 'Health Sync',
                   visualDensity: VisualDensity.comfortable,
                   padding: const EdgeInsets.all(12),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.hub_rounded, color: Colors.blueAccent, size: 20),
-                  onPressed: () {
-                    ref.read(matterServiceProvider).broadcastSleepScene();
-                  },
-                  tooltip: 'Matter Scene',
-                  visualDensity: VisualDensity.comfortable,
-                  padding: const EdgeInsets.all(12),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.waves_rounded, color: Colors.greenAccent, size: 20),
-                  onPressed: () => _showCalibrationDialog(context, ref),
-                  tooltip: 'Calibrate Room',
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
                 ),
                 IconButton(
                   icon: Icon(
@@ -276,8 +168,6 @@ class HomeScreen extends ConsumerWidget {
                   constraints: const BoxConstraints(),
                 ),
                 _buildThermalBadge(context, ref),
-                const SizedBox(width: 8),
-                _buildC2PABadge(context),
                 const SizedBox(width: 12),
                 IconButton(
                   onPressed: () => _showFavoritesSheet(context, ref),
@@ -286,30 +176,6 @@ class HomeScreen extends ConsumerWidget {
                   constraints: const BoxConstraints(),
                 ),
               ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildC2PABadge(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _showC2PADialog(context),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.verified_user_rounded, color: MurmurTheme.accent, size: 14),
-            const SizedBox(width: 4),
-            const Text(
-              'C2PA',
-              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),
           ],
         ),
@@ -342,55 +208,6 @@ class HomeScreen extends ConsumerWidget {
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
-  }
-
-  void _showCalibrationDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => _CalibrationDialog(
-        onCalibrate: () async {
-          final fft = await ref.read(audioEngineProvider).analyzeRoomNoise();
-          if (fft.isNotEmpty) {
-            _applyInverseMasking(ref, fft);
-          }
-        },
-      ),
-    );
-  }
-
-  void _applyInverseMasking(WidgetRef ref, List<double> fft) {
-    // Basic Inverse Masking Algorithm:
-    // fft[0-20] are low frequencies (AC hum, traffic)
-    // fft[20-100] are mid frequencies (Fans, talking)
-    // fft[100-255] are high frequencies (Hiss, electronics)
-    
-    double lowEnergy = fft.sublist(0, 20).reduce((a, b) => a + b) / 20;
-    double midEnergy = fft.sublist(20, 100).reduce((a, b) => a + b) / 80;
-    double highEnergy = fft.sublist(100, 256).reduce((a, b) => a + b) / 156;
-
-    // Normalizing energy to a usable volume multiplier
-    lowEnergy = (lowEnergy * 10).clamp(0.1, 0.8);
-    midEnergy = (midEnergy * 10).clamp(0.1, 0.8);
-    highEnergy = (highEnergy * 10).clamp(0.1, 0.8);
-
-    // Auto-Mix based on noise floor
-    ref.read(audioEngineProvider).stopAll();
-    
-    // Masking low hum with Brown Noise/Heartbeat
-    if (lowEnergy > 0.2) {
-      ref.read(soundCardProvider('brown').notifier).applySetting(SoundSetting(volume: lowEnergy, tone: 0.3, isPlaying: true));
-    }
-    
-    // Masking mid noise with Pink Noise/Fan
-    if (midEnergy > 0.2) {
-      ref.read(soundCardProvider('fan').notifier).applySetting(SoundSetting(volume: midEnergy, tone: 0.6, isPlaying: true));
-    }
-
-    // Masking high hiss with White Noise/Rain
-    if (highEnergy > 0.1) {
-      ref.read(soundCardProvider('white').notifier).applySetting(SoundSetting(volume: highEnergy, tone: 0.9, isPlaying: true));
-    }
   }
 
   void _showTimerSheet(BuildContext context, WidgetRef ref) {
