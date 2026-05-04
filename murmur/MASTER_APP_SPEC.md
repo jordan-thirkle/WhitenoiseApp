@@ -4,7 +4,11 @@
 - **App Name**: Murmur
 - **Bundle ID**: `com.jordanthirkle.murmur`
 - **Aesthetic**: AAA++ Premium Glassmorphism / Deep Charcoal (#0D0F14)
-- **Target Audience**: Families (Ambient sleep sound utility)
+- **Target Audience**:
+  - **Families & Parents**: Zero-data infant care (COPPA/GDPR-K) with specialized neonatal tracks.
+  - **Health Optimizers**: High-performance "Proactive Sleepers" utilizing CLAS and probabilistic diagnostics.
+  - **IoT Enthusiasts**: Local-first smart home power users requiring Matter-over-IP environmental agency.
+  - **Secondary**: Older adults (SWS reinforcement) and non-pharmacological insomnia management.
 - **Compliance**: COPPA / GDPR-K (Zero-Data Model)
 
 ## 2. Technical Architecture
