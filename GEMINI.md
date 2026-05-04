@@ -5,8 +5,8 @@
 **App Name**: Murmur
 **Type**: Flutter mobile app (iOS + Android)
 **Bundle ID**: `com.jordanthirkle.murmur`
-**Category**: Health & Fitness (NOT Kids category — see implementation plan for rationale)
-**Purpose**: Ambient sleep sound app for families. Replaces YouTube Kids for overnight audio. Core feature is indefinite background playback with no engagement prompts.
+**Category**: Health & Fitness (Premium Wellness Utility)
+**Purpose**: High-fidelity ambient sleep sound app for families. Optimized for indefinite background playback with zero engagement prompts and absolute privacy.
 
 ## Repository Structure
 
@@ -27,11 +27,11 @@ WhitenoiseApp/
 ## Tech Stack
 
 - **Framework**: Flutter (Dart)
-- **Audio engine**: `just_audio` + `audio_service` + `just_audio_background`
-- **State management**: `provider`
-- **Storage**: `shared_preferences` (timer prefs only — no user data)
-- **External links**: `url_launcher`
-- **No analytics SDK** — zero-data compliance model
+- **Audio engine**: `flutter_soloud` (C++/FFI) + `audio_service`
+- **State management**: `flutter_riverpod`
+- **Storage**: `shared_preferences` (Local-only, zero-cloud)
+- **Compliance**: Xcode 26 / Android 16 (API 36) Edge-to-Edge
+- **Privacy**: `PrivacyInfo.xcprivacy` (iOS) / Zero-Data Manifest
 
 ## Architecture Rules
 
@@ -39,7 +39,7 @@ WhitenoiseApp/
 - Shared code in `lib/core/`
 - Models in `lib/models/`
 - No business logic in widgets
-- `AudioHandler` is the single source of truth for playback state
+- `AudioEngineRepository` handles DSP/Soloud orchestration
 
 ## Design System
 
@@ -57,8 +57,7 @@ WhitenoiseApp/
 - COPPA / GDPR-K compliant via zero-data model
 - No personal data collected
 - No tracking SDKs
-- Privacy Policy hosted at: `jordanthirkle.com/murmur/privacy`
-- Terms of Service at: `jordanthirkle.com/murmur/terms`
+- Privacy Policy: `https://jordanthirkle.com/murmur/privacy`
 
 ## Commit Convention
 
@@ -67,8 +66,7 @@ Conventional Commits. Body required — explain WHY, not WHAT.
 
 ## Audio Asset Spec
 
-- Format: `.m4a` (AAC 128kbps)
-- Duration: ≥ 3 minutes
-- Loop type: seamless equal-power crossfade
+- Format: `.ogg` (Vorbis High-Fidelity)
+- Duration: Seamless loops
+- Engine: SoLoud (Biquad Filters / Master Limiter)
 - License: CC0 / royalty-free commercial
-- Max size: 4MB per file
