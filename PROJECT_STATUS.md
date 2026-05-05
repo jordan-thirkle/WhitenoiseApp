@@ -5,13 +5,10 @@
 **Platform**: iOS 26 (Xcode 26) / Android 16 (API 36)
 
 ## 🚀 Recent Progress (Hardening Phase)
-- **Clinical De-risking**: Physically deleted all SaMD (GNN, TUS, diagnostic) logic residue to avoid medical device rejections.
-- **Permission Hardening**: Removed `RECORD_AUDIO` permission from Android for privacy-first compliance.
-- **Compliance**: Generated `PrivacyInfo.xcprivacy` (iOS) and implemented Edge-to-Edge (Android 16) system UI.
-- **Wellness Pivot**: Sanitized `StatsScreen` UI to remove medical jargon and simplified to wellness-only metrics.
-- **Audio Integrity**: Reverted to high-fidelity OGG loops for 8+ hour background stability (thermal hardening).
-- **Entitlements**: Created `Runner.entitlements` for functional iOS HealthKit support.
-- **Fixes**: Connected Onboarding paywall button to functional IAP flow.
+- **Thermal Intelligence**: Implemented `ThermalService` for dynamic device temperature monitoring with real-time UI feedback.
+- **HealthKit Sync**: Integrated functional HealthKit/Google Fit synchronization for wellness-focused sleep tracking.
+- **Web Demo Engine**: Refactored `AudioEngineRepository` with conditional fallback (Audioplayers) to support browser-based demonstrations.
+- **Repo Unification**: Unified `JordanThirkle.com` into the main repository and configured `murmur.vercel.app` for the live app demo.
 - **Cleanup**: Sanitized repository structure while preserving critical website integration and the web platform for demo purposes.
 
 ## ✅ Completed Milestones
