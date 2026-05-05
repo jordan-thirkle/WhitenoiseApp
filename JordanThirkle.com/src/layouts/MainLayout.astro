@@ -1,0 +1,91 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@/styles/global.css';
+import { ToastProvider } from '@/components/react/ToastProvider';
+import { CommandPalette } from '@/components/react/CommandPalette';
+import Navbar from '@/components/astro/Navbar.astro';
+import BaseHead from '@/components/astro/BaseHead.astro';
+import Footer from '@/components/astro/Footer.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	canonicalURL?: URL;
+	articleDate?: Date;
+}
+
+const {
+	title = 'Jordan Thirkle | Full-Stack Developer & Architect',
+	description = 'Senior Full-Stack Developer specializing in high-performance web applications, minimalist architecture, and product engineering.',
+	image = '/og-image.png',
+	canonicalURL = new URL(Astro.url.pathname, Astro.site),
+	articleDate,
+} = Astro.props;
+
+
+
+// Fetch search data
+const blogs = await getCollection('blog');
+const projects = await getCollection('projects');
+const devlogs = await getCollection('devlog');
+
+const searchData = [
+  ...blogs.map(post => ({ 
+    name: post.data.title, 
+    href: `/blog/${post.id}`, 
+    category: 'Blog',
+    description: post.data.description,
+    tags: post.data.tags 
+  })),
+  ...projects.map(proj => ({ 
+    name: proj.data.title, 
+    href: `/projects/${proj.id}`, 
+    category: 'Project',
+    description: proj.data.description,
+    tags: proj.data.tech 
+  })),
+  ...devlogs.map(log => ({ 
+    name: log.data.title, 
+    href: `/devlog/${log.id}`, 
+    category: 'Dev Log',
+    description: log.data.description,
+    tags: log.data.tags 
+  })),
+];
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+	<head>
+		<BaseHead {title} {description} {image} {canonicalURL} {articleDate} />
+		<ClientRouter />
+	</head>
+	<body class="bg-zinc-950 text-zinc-300 selection:bg-zinc-800 selection:text-white flex flex-col min-h-screen">
+		<ToastProvider client:load />
+		<CommandPalette client:idle searchData={searchData} />
+		
+		<Navbar />
+		
+		<main class="flex-grow container mx-auto px-6 max-w-[1440px] py-24">
+			<slot />
+		</main>
+
+		<Footer />
+		
+		<style is:global>
+			:root {
+				--accent: 255, 255, 255;
+			}
+			
+			body {
+				font-family: 'Inter', 'Inter Fallback', sans-serif;
+			}
+			
+			h1, h2, h3, h4, h5, h6 {
+				font-family: 'Outfit', 'Outfit Fallback', sans-serif;
+			}
+		</style>
+	</body>
+</html>

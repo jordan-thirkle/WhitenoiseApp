@@ -1,0 +1,42 @@
+---
+title: "Murmur: Sleep Sounds & Timer"
+description: "A native Android (and iOS) ambient sound app built to solve one problem: playing rain and white noise overnight without interruptions. No engagement prompts. No accounts. No data collected."
+category: "Mobile Apps"
+tech: ["Flutter", "Dart", "just_audio", "audio_service", "Android"]
+pubDate: 2026-05-01
+timeline: "In Development"
+mission: "Replace YouTube Kids for overnight audio — indefinite background playback with no 'Are you still watching?' interruptions, built on native Android foreground services and seamless audio looping."
+githubUrl: "https://github.com/jordan-thirkle/murmur"
+liveUrl: "https://jordan-thirkle-com.vercel.app/murmur"
+image: "/projects/murmur.png"
+featured: true
+---
+
+My daughter listens to rain sounds to sleep. We'd been using YouTube Kids on her TV overnight — which works until the "Are you still watching?" prompt wakes her up. Murmur is the fix.
+
+## The Problem
+
+YouTube Kids is built for engagement, not for indefinite passive audio. Its session-timeout logic is by design: it exists to reduce bandwidth for inactive users. The result is a hard failure at 3am that resets a sleeping child's arousal threshold.
+
+Dedicated native apps solve this because iOS and Android provide specialised audio frameworks explicitly for background playback. A properly configured foreground service on Android — or an `AVAudioSession(.playback)` on iOS — tells the OS to treat this app differently from a video player.
+
+## Architecture
+
+**Audio engine**: `just_audio` + `audio_service`. This combination provides gapless looping with under 40ms latency between loop iterations — below the human perception threshold for continuous ambient noise. The `AudioHandler` is the single source of truth for playback state.
+
+**Android**: Runs as a `mediaPlayback` foreground service, mandatory from Android API 34 onwards. The persistent notification satisfies OS requirements while surfacing playback controls.
+
+**Gapless looping**: Each audio file is engineered with equal-power crossfades at zero-crossing points. This eliminates the "metronome effect" — the faint rhythmic pattern that prevents the brain from habituating to the sound.
+
+**Zero-data model**: No analytics SDK. No accounts. No device identifiers collected. COPPA and GDPR-K compliance by architecture, not policy.
+
+## Sound Library (v1.0)
+
+8 curated CC0-licensed ambient tracks covering the full noise spectrum: Rain, Thunderstorm, Ocean, Forest, Fan, Brown Noise, Pink Noise, and White Noise. Each processed to a seamless loop at AAC 128kbps.
+
+## Status
+
+Currently in active development. Google Play submission is the initial target. iOS to follow via the same Flutter codebase.
+
+- [Privacy Policy](/murmur/privacy)
+- [Terms of Service](/murmur/terms)

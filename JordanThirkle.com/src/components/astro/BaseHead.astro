@@ -1,0 +1,89 @@
+---
+import { SITE_CONFIG } from '@/config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  articleDate?: Date;
+  canonicalURL?: URL;
+}
+
+const {
+  title,
+  description = SITE_CONFIG.description,
+  image = '/og-image.jpg', // Default OG image path
+  articleDate,
+  canonicalURL = new URL(Astro.url.pathname, Astro.site),
+} = Astro.props;
+
+const siteTitle = title ? `${title} | ${SITE_CONFIG.name}` : `${SITE_CONFIG.name} | Full-Stack Architect`;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+
+
+<!-- Author -->
+<meta name="author" content={SITE_CONFIG.name} />
+
+<!-- Robots (SEO & AI Optimizations) -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{siteTitle}</title>
+<meta name="title" content={siteTitle} />
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={articleDate ? 'article' : 'website'} />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={siteTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(image, Astro.url)} />
+{articleDate && <meta property="article:published_time" content={articleDate.toISOString()} />}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:title" content={siteTitle} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta property="twitter:site" content={SITE_CONFIG.socials.x} />
+<meta property="twitter:creator" content={SITE_CONFIG.socials.x} />
+
+<!-- RSS Link -->
+<link rel="alternate" type="application/rss+xml" title={SITE_CONFIG.name} href={new URL('rss.xml', Astro.site)} />
+
+<!-- JSON-LD Knowledge Graph -->
+<script type="application/ld+json" is:inline>
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://jordanthirkle.com/#person",
+    "name": "Jordan Thirkle",
+    "url": "https://jordanthirkle.com",
+    "jobTitle": "Full-Stack Architect",
+    "description": "${SITE_CONFIG.description}",
+    "knowsAbout": [
+      "Astro",
+      "Vite",
+      "React",
+      "TypeScript",
+      "SaaS Architecture",
+      "Game Development",
+      "AI Engineering"
+    ],
+    "sameAs": [
+      "https://x.com/${SITE_CONFIG.socials.x.replace('@', '')}",
+      "https://github.com/${SITE_CONFIG.socials.github}",
+      "https://linkedin.com/in/${SITE_CONFIG.socials.linkedin}"
+    ]
+  }
+</script>

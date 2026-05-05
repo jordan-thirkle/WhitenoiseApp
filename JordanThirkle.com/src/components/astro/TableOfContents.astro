@@ -1,0 +1,124 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const toc = headings.filter((h) => h.depth > 1 && h.depth < 4);
+
+if (toc.length === 0) return null;
+---
+
+<!-- Desktop Sidebar ToC -->
+<aside class="hidden lg:block w-64 shrink-0">
+  <div class="sticky top-32 space-y-4">
+    <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-400">In this post</h2>
+    <nav class="flex flex-col gap-3 toc-nav">
+      {toc.map((h) => (
+        <a
+          href={`#${h.slug}`}
+          class={`toc-link text-sm transition-colors hover:text-white ${
+            h.depth === 2 ? 'text-zinc-400 font-medium' : 'text-zinc-500 pl-4'
+          }`}
+          data-slug={h.slug}
+          data-depth={h.depth}
+        >
+          {h.text}
+        </a>
+      ))}
+    </nav>
+  </div>
+</aside>
+
+<!-- Mobile Collapsible ToC -->
+<details class="lg:hidden mb-8 border border-zinc-800 rounded-xl bg-zinc-900/50 overflow-hidden">
+  <summary class="px-4 py-3 cursor-pointer text-sm font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors bg-zinc-900 list-none flex justify-between items-center">
+    In this post
+    <svg class="w-4 h-4 transition-transform details-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </summary>
+  <div class="p-4 bg-zinc-950/50">
+    <nav class="flex flex-col gap-3">
+      {toc.map((h) => (
+        <a
+          href={`#${h.slug}`}
+          class={`toc-link-mobile text-sm transition-colors hover:text-white ${
+            h.depth === 2 ? 'text-zinc-300 font-medium' : 'text-zinc-500 pl-4'
+          }`}
+        >
+          {h.text}
+        </a>
+      ))}
+    </nav>
+  </div>
+</details>
+
+<style>
+  details[open] .details-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Active state for Scrollspy */
+  .toc-link.active {
+    color: white;
+    font-weight: 600;
+  }
+
+  /* Add a little indicator dot for active h2 */
+  .toc-link.active[data-depth="2"]::before {
+    content: "•";
+    position: absolute;
+    left: -12px;
+    color: white;
+  }
+  .toc-link {
+    position: relative;
+  }
+</style>
+
+<script>
+  // Setup intersection observer for scrollspy
+  document.addEventListener('astro:page-load', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Remove active class from all links
+          document.querySelectorAll('.toc-link').forEach((link) => {
+            link.classList.remove('active');
+            // Revert colors based on depth
+            if (link.classList.contains('pl-4')) {
+              link.classList.remove('text-zinc-300');
+              link.classList.add('text-zinc-500');
+            } else {
+              link.classList.remove('text-zinc-300');
+              link.classList.add('text-zinc-400');
+            }
+          });
+
+          // Add active class to current link
+          const id = entry.target.getAttribute('id');
+          const activeLink = document.querySelector(`.toc-link[data-slug="${id}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+            activeLink.classList.remove('text-zinc-400', 'text-zinc-500');
+            activeLink.classList.add('text-zinc-300');
+          }
+        }
+      });
+    }, {
+      rootMargin: '0px 0px -80% 0px', // Trigger when heading reaches top 20% of viewport
+      threshold: 1.0
+    });
+
+    // Observe all h2 and h3 elements within the article
+    document.querySelectorAll('article h2, article h3').forEach((heading) => {
+      observer.observe(heading);
+    });
+
+    // Smooth scrolling is handled natively by html { scroll-behavior: smooth; } in global css
+    // If we need to offset for the sticky header, we can add scroll-margin-top to headings
+  });
+</script>

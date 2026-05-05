@@ -1,0 +1,13 @@
+Google just dropped Gemma 4. It’s an open model with a 256K context window and 140+ language support, engineered to run everywhere from the edge to the cloud.
+
+Even better? You can use it to build something that actually matters.
+
+The Kaggle Gemma 4 Good Hackathon is live. We're talking offline-capable, global-scale solutions for things like medical triage assistants supporting 1.5 million community health workers.
+
+I just wrote a zero-BS guide on the specs (E2B, E4B, 26B, 31B) and how to architect a winning solution fast.
+
+Stop over-engineering. Pick the right model size, fine-tune, and ship.
+
+Read the full deep-dive here: [Link to blog post]
+
+#Gemma4 #AI #MachineLearning #Kaggle #GoogleCloud #Hackathon #LLM #BuildInPublic

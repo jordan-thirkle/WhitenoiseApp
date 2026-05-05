@@ -1,0 +1,34 @@
+---
+title: "Creator Hub (This Site)"
+description: "A minimalist portfolio template focusing on typography, dark mode, and zero-JS load times."
+category: "Websites"
+tech: ["Astro", "React", "Tailwind"]
+pubDate: 2024-04-15
+timeline: "2 Weeks"
+mission: "High-performance architecture for a solo father with limited time—proving that AI-native workflows allow a solo developer to out-build traditional agencies."
+githubUrl: "https://github.com/jordan-thirkle/creator-hub"
+xThreadUrl: "https://x.com/jordan_thirkle/status/1234567890"
+image: "/og/creator-hub.png"
+featured: true
+---
+
+I needed a central hub to host my diverse portfolio of games, SaaS apps, and writing. I built this minimalist template focusing on typography, dark mode aesthetics, and zero-JS load times. 
+
+## Overview
+It serves as my digital home and lead generation funnel. Built with an "Islands Architecture," it ships 0kb of JavaScript for static articles, only hydrating the interactive command palette and engagement docks.
+
+## Technical Deep Dive
+
+### Islands Architecture
+The primary challenge was maintaining a "Senior Dev" aesthetic (fast, responsive, animations) while keeping the bundle size near zero. By using Astro, I implemented an **Islands Architecture** where only the interactive `CommandPalette` and `EngagementDock` are hydrated as React components. The rest of the site is static HTML/CSS, resulting in instantaneous page transitions and perfect Lighthouse scores.
+
+### Custom Search & Filtering
+Instead of reaching for a heavy search library like Algolia for a small site, I built a custom search index using Astro's content collections. The `CommandPalette` performs weighted searches across titles, tags, and descriptions, providing a high-performance "Spotlight" experience without the overhead of external API calls.
+
+## Connected Guides
+If you want to see the specific architectural decisions behind this build, check out these deep dives:
+- [Minimalist Architecture for Solo Devs](/blog/minimalist-architecture)
+- [Mastering Astro Islands](/blog/astro-islands)
+
+## The Takeaway
+Creator Hub proves that AI-native workflows allow a solo developer to out-build traditional agencies. By prioritizing structural simplicity and leveraging modern tools like Astro, I've created a digital headquarters that is both a technical showcase and a high-conversion lead engine.

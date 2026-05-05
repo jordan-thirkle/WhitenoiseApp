@@ -1,0 +1,16 @@
+---
+title: "Content Automation: Scaling the Weekly Engine"
+description: "Hardening our automated pipelines for weekly dev logs and SEO-optimized blog generation."
+pubDate: 2026-05-03T12:00:00Z
+tags: ["Automation", "Architecture", "SEO"]
+---
+
+We're shifting focus from raw infrastructure to content velocity. A system that doesn't document itself and drive its own organic growth is a dead end. This week, we fully automated the content generation pipelines.
+
+Here is what we shipped:
+
+*   **Automated Blog Pipeline:** Implemented a weekly generation script and GitHub Action for high-quality, SEO-optimized blog posts. We're leveraging LLMs to pull from recent repo activity to draft technical content automatically. No more manual drafting; just raw, consistent output.
+*   **Dev Log Generation Tuning:** Refined the weekly dev log generation script. The workflow now reliably aggregates multi-repo commit history, synthesizes the narrative, and commits directly to the portfolio repository.
+*   **Content Hardening:** Merged new, heavily optimized blog posts covering GEO (Generative Engine Optimization) readiness and high-performance DOM filtering.
+
+Architecturally, we're removing the human bottleneck from the content pipeline. By triggering these generation scripts via cron jobs, we maintain a persistent, zero-BS engineering presence online. The portfolio is now a self-updating system. Ship and iterate.

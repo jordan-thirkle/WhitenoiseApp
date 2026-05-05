@@ -1,0 +1,86 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const title = "Terms of Service — Murmur";
+const description = "Terms of service for the Murmur sleep sounds app by Jordan Thirkle.";
+const effectiveDate = "May 1, 2026";
+---
+
+<MainLayout title={title} description={description}>
+  <div class="max-w-3xl mx-auto space-y-12">
+    <header class="mb-16">
+      <p class="text-sm text-zinc-500 mb-4">
+        <a href="/murmur" class="text-blue-400 hover:text-blue-300 transition-colors">← Murmur</a>
+      </p>
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">
+        Terms of Service
+      </h1>
+      <p class="text-xl text-zinc-400">
+        Plain-language terms for using the Murmur app.
+      </p>
+    </header>
+
+    <div class="prose prose-zinc prose-invert max-w-none">
+
+      <h2>1. Agreement</h2>
+      <p>
+        By downloading or using Murmur ("the App"), you agree to these Terms of Service. If you are using the App on behalf of a minor, you represent that you are the parent or legal guardian and you accept these terms on their behalf.
+      </p>
+
+      <h2>2. What Murmur Is</h2>
+      <p>
+        Murmur is an ambient sound application that plays pre-recorded audio tracks for sleep, focus, and relaxation. It is a utility application. It does not generate user content, facilitate social interaction, or connect to external services.
+      </p>
+
+      <h2>3. Permitted Use</h2>
+      <p>You may use Murmur for personal, non-commercial purposes. You may not:</p>
+      <ul>
+        <li>Reverse-engineer, decompile, or extract audio assets from the application</li>
+        <li>Redistribute audio content bundled with the application</li>
+        <li>Use the application in a manner that violates applicable law</li>
+      </ul>
+
+      <h2>4. Intellectual Property</h2>
+      <p>
+        The Murmur application, including its design, code, and branding, is owned by Jordan Thirkle. Audio tracks within the application are licensed under Creative Commons Zero (CC0) or equivalent royalty-free licences. See in-app credits for attribution where applicable.
+      </p>
+
+      <h2>5. Disclaimer of Warranties</h2>
+      <p>
+        Murmur is provided "as is" without warranties of any kind. We do not warrant that the application will be uninterrupted, error-free, or suitable for any particular medical or therapeutic purpose. The app is a utility, not a medical device.
+      </p>
+      <p>
+        If your child has a medical condition or sleep disorder, consult a qualified healthcare professional. Murmur is not a substitute for professional medical advice.
+      </p>
+
+      <h2>6. Limitation of Liability</h2>
+      <p>
+        To the maximum extent permitted by applicable law, Jordan Thirkle shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the application.
+      </p>
+
+      <h2>7. Changes to the App and Terms</h2>
+      <p>
+        We reserve the right to modify or discontinue the App at any time. We may update these Terms; continued use of the App after changes constitutes acceptance of the updated Terms.
+      </p>
+
+      <h2>8. Governing Law</h2>
+      <p>
+        These Terms are governed by the laws of England and Wales. Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.
+      </p>
+
+      <h2>9. Contact</h2>
+      <p>
+        Jordan Thirkle<br />
+        <a href="mailto:jordan@jordanthirkle.com">jordan@jordanthirkle.com</a><br />
+        <a href="https://jordanthirkle.com">jordanthirkle.com</a>
+      </p>
+
+      <hr />
+
+      <p class="text-sm text-zinc-500">
+        Effective date: {effectiveDate}<br />
+        Last updated: {new Date().toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' })}
+      </p>
+    </div>
+  </div>
+</MainLayout>

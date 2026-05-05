@@ -1,0 +1,101 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Mail } from 'lucide-react';
+
+
+const title = "The Story";
+const description = "Computer Science graduate and full-stack architect building the future at the speed of AI.";
+---
+
+<MainLayout title={title} description={description}>
+  <section class="max-w-5xl mx-auto py-12">
+    <header class="text-center mb-20">
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white mb-8">
+        Building the future in the <span class="bg-gradient-to-r from-zinc-50 to-zinc-400 bg-clip-text text-transparent">gaps of the present.</span>
+      </h1>
+      <p class="text-lg text-zinc-400 max-w-2xl mx-auto">
+        I'm a Computer Science graduate and Full-Stack Architect building high-performance ecosystems. My focus is on technical excellence and extreme efficiency.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+      <div class="lg:col-span-7 space-y-12 text-zinc-400 leading-relaxed">
+        <section>
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6">The Mission</h2>
+          <p class="text-xl text-zinc-200 font-medium leading-relaxed">
+            I've transformed my workflow into a disciplined, AI-accelerated craft. This isn't about cutting corners; it's about eliminating the friction between an idea and its execution.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6">Building in Public</h2>
+          <p>
+            I believe in transparency. I'm building this entire platform in public, documenting every architectural decision and pivot. I share real-time updates, technical breakthroughs, and the reality of solo-founding over on <a href="https://x.com/jordan_thirkle" target="_blank" rel="noopener noreferrer" class="text-white hover:underline decoration-zinc-700 underline-offset-4 font-medium">X (formerly Twitter)</a>.
+          </p>
+          <p class="mt-4">
+            The website itself is a living laboratory for <strong>AI-native development</strong>. By leveraging AI as a force multiplier, I'm proving that a solo architect can out-build traditional teams without sacrificing code quality or design integrity.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6">What this site is about</h2>
+          <p>
+            This is my digital headquarters. It's where I host my portfolio of games, SaaS applications, and technical writing. It's a place for deep dives into minimalist architecture, performance optimization, and the future of software engineering.
+          </p>
+        </section>
+
+        <div class="pt-8 border-t border-zinc-900 flex flex-wrap gap-4">
+          <a href="/contact" class="flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full text-sm hover:bg-zinc-200 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Work With Me
+          </a>
+          <div class="flex gap-2">
+            <a href="https://x.com/jordan_thirkle" target="_blank" rel="noopener noreferrer" class="p-3 bg-zinc-950 border border-zinc-900 rounded-full text-zinc-400 hover:text-white hover:border-zinc-800 transition-all" aria-label="X Profile">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+            </a>
+            <a href="https://github.com/jordanthirkle" target="_blank" rel="noopener noreferrer" class="p-3 bg-zinc-950 border border-zinc-900 rounded-full text-zinc-400 hover:text-white hover:border-zinc-800 transition-all" aria-label="GitHub Profile">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="lg:col-span-5 space-y-8">
+        <div class="aspect-square rounded-[2.5rem] bg-zinc-950 border border-zinc-900 overflow-hidden relative group">
+          <div class="absolute inset-0 bg-gradient-to-br from-zinc-500/10 to-transparent opacity-50"></div>
+          <div class="absolute inset-0 flex items-center justify-center p-12 text-center">
+            <div>
+              <p class="text-zinc-500 font-mono text-xs mb-4 tracking-[0.3em]">SYSTEM STATUS</p>
+              <p class="text-3xl font-bold text-white tracking-tight leading-tight">Shipping at the Speed of AI</p>
+              <div class="mt-8 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Building in Public
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-8 bg-zinc-950 border border-zinc-900 rounded-[2rem]">
+          <h3 class="text-xs font-bold text-zinc-500 mb-6 uppercase tracking-widest">Stack Focus</h3>
+          <ul class="space-y-4">
+            <li class="flex items-center gap-3 text-sm text-zinc-300">
+              <div class="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+              Astro 6 + React Islands
+            </li>
+            <li class="flex items-center gap-3 text-sm text-zinc-300">
+              <div class="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+              AI-Native Workflows
+            </li>
+            <li class="flex items-center gap-3 text-sm text-zinc-300">
+              <div class="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+              Minimalist Architecture
+            </li>
+            <li class="flex items-center gap-3 text-sm text-zinc-300">
+              <div class="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+              High-Performance UX
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</MainLayout>

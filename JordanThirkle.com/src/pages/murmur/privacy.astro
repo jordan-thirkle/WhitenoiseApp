@@ -1,0 +1,98 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const title = "Privacy Policy — Murmur";
+const description = "Murmur collects no personal data. Full privacy policy for the Murmur sleep sounds app.";
+const effectiveDate = "May 1, 2026";
+---
+
+<MainLayout title={title} description={description}>
+  <div class="max-w-3xl mx-auto space-y-12">
+    <header class="mb-16">
+      <p class="text-sm text-zinc-500 mb-4">
+        <a href="/murmur" class="text-blue-400 hover:text-blue-300 transition-colors">← Murmur</a>
+      </p>
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">
+        Privacy Policy
+      </h1>
+      <p class="text-xl text-zinc-400">
+        Murmur collects no personal data. This policy explains exactly what that means.
+      </p>
+    </header>
+
+    <div class="prose prose-zinc prose-invert max-w-none">
+
+      <h2>1. Who We Are</h2>
+      <p>
+        Murmur is developed and maintained by Jordan Thirkle, an independent developer based in the United Kingdom. You can reach us at <a href="mailto:jordan@jordanthirkle.com">jordan@jordanthirkle.com</a>.
+      </p>
+
+      <h2>2. The Zero-Data Commitment</h2>
+      <p>
+        Murmur operates on a strict zero-data model. The application does not collect, transmit, store, or share any personal information. This applies to all users including children.
+      </p>
+      <p>Specifically, Murmur does <strong>not</strong> collect:</p>
+      <ul>
+        <li>Names, email addresses, or account information (no accounts exist)</li>
+        <li>Device identifiers (IDFA, AAID, or any similar identifiers)</li>
+        <li>Location data</li>
+        <li>Audio recordings — the app <em>plays</em> audio; it does not record it</li>
+        <li>Usage analytics or behavioural tracking data</li>
+        <li>IP addresses or network identifiers</li>
+        <li>Crash logs or diagnostic data shared with third parties</li>
+      </ul>
+
+      <h2>3. What Is Stored Locally (On Your Device Only)</h2>
+      <p>
+        Murmur stores only your sleep timer preference using your device's local storage. This data never leaves your device. It is not accessible to us or any third party.
+      </p>
+
+      <h2>4. Third-Party SDKs and Services</h2>
+      <p>
+        Murmur contains no third-party analytics, advertising, or tracking SDKs. The app does not integrate with Firebase, Google Analytics, Facebook SDK, Mixpanel, Amplitude, or any similar service.
+      </p>
+      <p>
+        The only network activity the app performs is loading audio files bundled within the application itself. No network requests are made to external servers.
+      </p>
+
+      <h2>5. Children's Privacy (COPPA / GDPR-K)</h2>
+      <p>
+        Because Murmur collects no personal information from any user, including children under the age of 13, the requirements of the Children's Online Privacy Protection Act (COPPA) and GDPR-K are satisfied by design. We do not knowingly collect personal information from any person of any age.
+      </p>
+
+      <h2>6. Audio Data</h2>
+      <p>
+        Murmur is a sound playback application. It plays pre-recorded ambient audio files stored within the app. It does not access your device's microphone, does not record any audio, and does not capture any biometric or voice data.
+      </p>
+
+      <h2>7. In-App Purchases</h2>
+      <p>
+        The current version of Murmur is entirely free with no in-app purchases. All payment processing, if introduced in a future version, would be handled exclusively by Apple (App Store) or Google (Google Play). Murmur would not receive or store payment information directly.
+      </p>
+
+      <h2>8. Your Rights</h2>
+      <p>
+        Because we collect no personal data, there is nothing to access, correct, export, or delete. If you have questions or concerns, contact us at <a href="mailto:jordan@jordanthirkle.com">jordan@jordanthirkle.com</a>.
+      </p>
+
+      <h2>9. Changes to This Policy</h2>
+      <p>
+        If the app's data practices change, this policy will be updated and the effective date below will be revised. The zero-data commitment is a design constraint, not a marketing claim — any change that introduces data collection would represent a fundamental architectural shift and would be communicated prominently.
+      </p>
+
+      <h2>10. Contact</h2>
+      <p>
+        Jordan Thirkle<br />
+        <a href="mailto:jordan@jordanthirkle.com">jordan@jordanthirkle.com</a><br />
+        <a href="https://jordanthirkle.com">jordanthirkle.com</a>
+      </p>
+
+      <hr />
+
+      <p class="text-sm text-zinc-500">
+        Effective date: {effectiveDate}<br />
+        Last updated: {new Date().toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' })}
+      </p>
+    </div>
+  </div>
+</MainLayout>
