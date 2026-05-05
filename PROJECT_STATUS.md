@@ -9,6 +9,7 @@
 - **HealthKit Sync**: Integrated functional HealthKit/Google Fit synchronization for wellness-focused sleep tracking.
 - **Web Demo Engine**: Refactored `AudioEngineRepository` with conditional fallback (Audioplayers) to support browser-based demonstrations.
 - **Repo Unification**: Unified `JordanThirkle.com` into the main repository and configured `murmur.vercel.app` for the live app demo.
+- **Deployment Fix**: Resolved 404 NOT_FOUND on Vercel by updating the workflow to point to the `build/web` directory and moving `vercel.json` to the web root.
 - **Cleanup**: Sanitized repository structure while preserving critical website integration and the web platform for demo purposes.
 
 ## ✅ Completed Milestones
