@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +35,7 @@ class HomeScreen extends ConsumerWidget {
               Positioned(
                 top: -100,
                 left: -100,
-                child: _AmbientGlow(color: MurmurTheme.accent.withOpacity(0.05)),
+                child: _AmbientGlow(color: MurmurTheme.accent.withValues(alpha: 0.05)),
               ),
               CustomScrollView(
                 slivers: [
@@ -68,7 +68,7 @@ class HomeScreen extends ConsumerWidget {
             style: TextStyle(
               fontSize: 48,
               fontWeight: FontWeight.w900,
-              color: MurmurTheme.accent.withOpacity(0.8),
+              color: MurmurTheme.accent.withValues(alpha: 0.8),
               letterSpacing: -2,
             ),
           ),
@@ -82,7 +82,7 @@ class HomeScreen extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () => ref.read(iapServiceProvider).buyPro(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: MurmurTheme.accent.withOpacity(0.1),
+                  backgroundColor: MurmurTheme.accent.withValues(alpha: 0.1),
                   foregroundColor: MurmurTheme.accent,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   minimumSize: Size.zero,
@@ -129,7 +129,7 @@ class HomeScreen extends ConsumerWidget {
                       : 'MULTI-TRACK MIXER',
                     key: ValueKey(timerState.isRunning),
                     style: TextStyle(
-                      color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withOpacity(0.4),
+                      color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withValues(alpha: 0.4),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -142,7 +142,7 @@ class HomeScreen extends ConsumerWidget {
                   width: timerState.isRunning ? 80 : 40,
                   height: 3,
                   decoration: BoxDecoration(
-                    color: timerState.isRunning ? MurmurTheme.accent : MurmurTheme.accent.withOpacity(0.3),
+                    color: timerState.isRunning ? MurmurTheme.accent : MurmurTheme.accent.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -213,9 +213,9 @@ class HomeScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -223,7 +223,7 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(width: 4),
           Text(
             'THERMAL: $label',
-            style: TextStyle(color: color.withOpacity(0.9), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
+            style: TextStyle(color: color.withValues(alpha: 0.9), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
           ),
         ],
       ),
@@ -243,7 +243,7 @@ class HomeScreen extends ConsumerWidget {
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: AlertDialog(
-          backgroundColor: MurmurTheme.surface.withOpacity(0.8),
+          backgroundColor: MurmurTheme.surface.withValues(alpha: 0.8),
           shape: RoundedRectangleBorder(
             borderRadius: MurmurTheme.cardRadius,
             side: const BorderSide(color: Colors.white10),
@@ -308,7 +308,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 4),
               Text(
                 description,
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11, height: 1.4),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 11, height: 1.4),
               ),
             ],
           ),
@@ -356,7 +356,7 @@ class HomeScreen extends ConsumerWidget {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent.withOpacity(0.1),
+                      backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
                       foregroundColor: Colors.redAccent,
                       elevation: 0,
                     ),
@@ -425,9 +425,9 @@ class HomeScreen extends ConsumerWidget {
           height: 100,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           decoration: BoxDecoration(
-            color: MurmurTheme.surface.withOpacity(0.8),
+            color: MurmurTheme.surface.withValues(alpha: 0.8),
             border: Border(
-              top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+              top: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1),
             ),
           ),
           child: Row(
@@ -440,7 +440,7 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 'SYSTEM STATUS',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -503,58 +503,7 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-    ),
-  ),
-);
-}
-
-  void _showC2PADialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: MurmurTheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: MurmurTheme.dialogRadius),
-        title: Row(
-          children: [
-            Icon(Icons.verified_user_rounded, color: MurmurTheme.accent),
-            const SizedBox(width: 12),
-            const Text('Content Credentials'),
-          ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'This audio was synthesized on-device using the Murmur NAC Engine v1.1.0.',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            _buildC2PAMetadata('Issuer', 'Murmur Health Infrastructure'),
-            _buildC2PAMetadata('Algorithm', 'Neural Audio Codec (NAC)'),
-            _buildC2PAMetadata('Signed', '2026-05-04 10:48 UTC'),
-            _buildC2PAMetadata('Integrity', 'Verified (Local-First)'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('CLOSE'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildC2PAMetadata(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.bold)),
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 10)),
-        ],
       ),
     );
   }
@@ -598,7 +547,7 @@ class HomeScreen extends ConsumerWidget {
                 child: Center(
                   child: Text(
                     'No saved mixes yet',
-                    style: TextStyle(color: Colors.white.withOpacity(0.3)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                   ),
                 ),
               )
@@ -614,7 +563,7 @@ class HomeScreen extends ConsumerWidget {
                     title: Text(mix.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                     subtitle: Text(
                       '${mix.settings.values.where((s) => s.isPlaying).length} sounds active',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -702,13 +651,6 @@ class HomeScreen extends ConsumerWidget {
     
     ref.read(mixControllerProvider.notifier).saveMix(name, currentSettings);
   }
-
-  void _showAboutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const SettingsDialog(),
-    );
-  }
 }
 
 class SoundCard extends ConsumerWidget {
@@ -730,13 +672,13 @@ class SoundCard extends ConsumerWidget {
         borderRadius: MurmurTheme.cardRadius,
         border: Border.all(
           color: state.isActive 
-              ? MurmurTheme.accent.withOpacity(0.3 + (state.volume * 0.4)) 
-              : Colors.white.withOpacity(0.05),
+              ? MurmurTheme.accent.withValues(alpha: 0.3 + (state.volume * 0.4)) 
+              : Colors.white.withValues(alpha: 0.05),
           width: 2,
         ),
         boxShadow: state.isActive ? [
           BoxShadow(
-            color: MurmurTheme.accent.withOpacity(0.1 + (state.volume * 0.2)),
+            color: MurmurTheme.accent.withValues(alpha: 0.1 + (state.volume * 0.2)),
             blurRadius: 20 + (state.volume * 20),
             spreadRadius: state.volume * 4,
           )
@@ -758,7 +700,7 @@ class SoundCard extends ConsumerWidget {
                   }
                 },
                 behavior: HitTestBehavior.opaque,
-                child: Container(
+                child: SizedBox(
                   width: double.infinity,
                   child: Stack(
                     children: [
@@ -799,7 +741,7 @@ class SoundCard extends ConsumerWidget {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: MurmurTheme.accent.withOpacity(0.1),
+                              color: MurmurTheme.accent.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -976,7 +918,7 @@ class SettingsDialog extends ConsumerWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: AlertDialog(
-        backgroundColor: MurmurTheme.surface.withOpacity(0.9),
+        backgroundColor: MurmurTheme.surface.withValues(alpha: 0.9),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         title: const Text('Murmur', style: TextStyle(fontWeight: FontWeight.w900)),
         content: Column(
@@ -988,7 +930,7 @@ class SettingsDialog extends ConsumerWidget {
                 return Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isPro ? Colors.amberAccent.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+                    color: isPro ? Colors.amberAccent.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(

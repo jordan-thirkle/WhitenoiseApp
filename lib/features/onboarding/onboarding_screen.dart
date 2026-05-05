@@ -4,7 +4,6 @@ import 'package:murmur/features/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/iap_service.dart';
-import '../audio/mix_controller.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -149,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _completeOnboarding(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_complete', true);
-    if (!mounted) return;
+    if (!context.mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const HomeScreen()),
     );
@@ -177,7 +176,7 @@ class _OnboardingPage extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             data.description,
-            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.5), height: 1.5),
+            style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.5), height: 1.5),
             textAlign: TextAlign.center,
           ),
         ],

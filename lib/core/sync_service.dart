@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
-import 'package:cryptography/cryptography.dart';
 import 'pairing_service.dart';
 
 final syncServiceProvider = Provider<SyncService>((ref) => SyncService());

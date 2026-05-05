@@ -10,6 +10,9 @@
 - **Web Demo Engine**: Refactored `AudioEngineRepository` with conditional fallback (Audioplayers) to support browser-based demonstrations.
 - **Repo Unification**: Unified `JordanThirkle.com` into the main repository and configured `murmur.vercel.app` for the live app demo.
 - **Cleanup**: Sanitized repository structure while preserving critical website integration and the web platform for demo purposes.
+- **CI/CD Hardening**: Updated Vercel deployment pipeline to use modern `vercel-token` and removed legacy Zeit references.
+- **UI & Codebase Modernization**: Resolved all build-time deprecation warnings (withValues) and BuildContext async gap issues.
+- **Dependency Alignment**: Aligned Health Service with v13.x API and corrected missing foundation imports for web compatibility.
 
 ## ✅ Completed Milestones
 - [x] SoLoud Engine Integration (FFI)

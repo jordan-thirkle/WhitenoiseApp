@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/murmur_theme.dart';
-import 'package:murmur/core/health_service.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -96,7 +94,7 @@ class StatsScreen extends ConsumerWidget {
         Text(
           'WELLNESS OVERVIEW',
           style: TextStyle(
-            color: MurmurTheme.accent.withOpacity(0.5),
+            color: MurmurTheme.accent.withValues(alpha: 0.5),
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 2,
@@ -117,7 +115,7 @@ class StatsScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: MurmurTheme.surface,
         borderRadius: MurmurTheme.cardRadius,
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,32 +183,13 @@ class StatsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFrontierRow(String label, String status, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.white24, size: 12),
-              const SizedBox(width: 8),
-              Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70)),
-            ],
-          ),
-          Text(status, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildMetricCard(String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: MurmurTheme.surface,
         borderRadius: MurmurTheme.cardRadius,
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +197,7 @@ class StatsScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: color.withOpacity(0.5), size: 14),
+              Icon(icon, color: color.withValues(alpha: 0.5), size: 14),
               const SizedBox(width: 8),
               Text(label, style: const TextStyle(fontSize: 10, color: Colors.white38)),
             ],
@@ -234,9 +213,9 @@ class StatsScreen extends ConsumerWidget {
 class _HypnodensityPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paintN3 = Paint()..color = Colors.blueAccent.withOpacity(0.4)..style = PaintingStyle.fill;
-    final paintREM = Paint()..color = Colors.purpleAccent.withOpacity(0.4)..style = PaintingStyle.fill;
-    final paintCore = Paint()..color = Colors.tealAccent.withOpacity(0.4)..style = PaintingStyle.fill;
+    final paintN3 = Paint()..color = Colors.blueAccent.withValues(alpha: 0.4)..style = PaintingStyle.fill;
+    final paintREM = Paint()..color = Colors.purpleAccent.withValues(alpha: 0.4)..style = PaintingStyle.fill;
+    final paintCore = Paint()..color = Colors.tealAccent.withValues(alpha: 0.4)..style = PaintingStyle.fill;
 
     final pathN3 = Path();
     final pathREM = Path();

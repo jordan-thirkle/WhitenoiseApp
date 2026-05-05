@@ -19,10 +19,10 @@ class IntentPreviewDialog extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
       child: AlertDialog(
-        backgroundColor: MurmurTheme.surface.withOpacity(0.8),
+        backgroundColor: MurmurTheme.surface.withValues(alpha: 0.8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28),
-          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
         title: Row(
           children: [
@@ -65,7 +65,7 @@ class IntentPreviewDialog extends StatelessWidget {
               onConfirm();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: MurmurTheme.accent.withOpacity(0.1),
+              backgroundColor: MurmurTheme.accent.withValues(alpha: 0.1),
               foregroundColor: MurmurTheme.accent,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),

@@ -3,13 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:health/health.dart';
 
-final healthServiceProvider = Provider((ref) => HealthService(ref));
+final healthServiceProvider = Provider((ref) => HealthService());
 
 class HealthService {
-  final Ref _ref;
-  final HealthFactory _health = HealthFactory();
+  final Health _health = Health();
   
-  HealthService(this._ref);
+  HealthService();
 
   /// Synchronizes sleep duration with the system health app.
   /// This is a wellness-focused feature to help users track their rest goals.
@@ -30,10 +29,10 @@ class HealthService {
         final startTime = now.subtract(duration);
         
         bool success = await _health.writeHealthData(
-          duration.inMinutes.toDouble(),
-          HealthDataType.SLEEP_ASLEEP,
-          startTime,
-          now,
+          value: duration.inMinutes.toDouble(),
+          type: HealthDataType.SLEEP_ASLEEP,
+          startTime: startTime,
+          endTime: now,
           unit: HealthDataUnit.MINUTE,
         );
 

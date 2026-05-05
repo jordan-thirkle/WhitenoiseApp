@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
+
+final audioEngineProvider = Provider<AudioEngineRepository>((ref) => AudioEngineRepository());
+
 
 class AudioEngineRepository {
   static final AudioEngineRepository _instance = AudioEngineRepository._internal();
