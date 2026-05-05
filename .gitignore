@@ -1,47 +1,45 @@
-# Flutter / Dart
-murmur/.dart_tool/
-murmur/.flutter-plugins
-murmur/.flutter-plugins-dependencies
-murmur/.packages
-murmur/build/
-murmur/pubspec.lock
-
-# Android
-murmur/android/.gradle/
-murmur/android/local.properties
-murmur/android/captures/
-murmur/android/key.properties
-*.jks
-*.keystore
-
-# iOS
-murmur/ios/.symlinks/
-murmur/ios/Flutter/flutter_export_environment.sh
-murmur/ios/Pods/
-murmur/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-
-# macOS
-murmur/macos/.symlinks/
-murmur/macos/Flutter/ephemeral/
-
-# IDE
-.idea/
-.vscode/settings.json
-*.iml
-
-# OS
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
 .DS_Store
-Thumbs.db
-desktop.ini
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-# Secrets — never commit these
-*.env
-.env.*
-google-services.json
-GoogleService-Info.plist
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# Dev Artifacts
-scratch/
-murmur/linux/
-murmur/macos/
-murmur/windows/
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
