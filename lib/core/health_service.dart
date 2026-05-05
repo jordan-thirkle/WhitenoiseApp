@@ -7,7 +7,7 @@ final healthServiceProvider = Provider((ref) => HealthService(ref));
 
 class HealthService {
   final Ref _ref;
-  final HealthFactory _health = HealthFactory();
+  final Health _health = Health();
   
   HealthService(this._ref);
 
@@ -30,10 +30,10 @@ class HealthService {
         final startTime = now.subtract(duration);
         
         bool success = await _health.writeHealthData(
-          duration.inMinutes.toDouble(),
-          HealthDataType.SLEEP_ASLEEP,
-          startTime,
-          now,
+          value: duration.inMinutes.toDouble(),
+          type: HealthDataType.SLEEP_ASLEEP,
+          startTime: startTime,
+          endTime: now,
           unit: HealthDataUnit.MINUTE,
         );
 

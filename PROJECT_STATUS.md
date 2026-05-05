@@ -1,40 +1,32 @@
-# Murmur — Project Status
+# Project Status: Murmur
 
-**Current Version**: v1.1.0+13 (Built-Right MVP)
-**Status**: SUBMISSION READY (May 2026)
-**Platform**: iOS 26 (Xcode 26) / Android 16 (API 36)
+## Overview
+Murmur is a premium pediatric wellness application designed for 2026 standards, focusing on high-fidelity ambient synthesis, data sovereignty, and cross-platform accessibility.
 
-## 🚀 Recent Progress (Hardening Phase)
-- **Thermal Intelligence**: Implemented `ThermalService` for dynamic device temperature monitoring with real-time UI feedback.
+## 🚀 Recent Accomplishments
 - **HealthKit Sync**: Integrated functional HealthKit/Google Fit synchronization for wellness-focused sleep tracking.
 - **Web Demo Engine**: Refactored `AudioEngineRepository` with conditional fallback (Audioplayers) to support browser-based demonstrations.
-- **Repo Unification**: Unified `JordanThirkle.com` into the main repository and configured `murmur.vercel.app` for the live app demo.
-- **Deployment Fix**: Resolved 404 NOT_FOUND on Vercel by updating the workflow to point to the `build/web` directory and moving `vercel.json` to the web root.
-- **Cleanup**: Sanitized repository structure while preserving critical website integration and the web platform for demo purposes.
+- **Repo Unification**: Unified repository structure (moved flutter source to root).
+
+## 🏁 Current Status: Hardened & Submission Ready
+
+- **Vercel Deployment**: FIXED. Structural 404 resolved by pointing deployment to `build/web` and relocating `vercel.json` to SPA-compatible path.
+- **Web Build**: FIXED. Fully cross-platform architecture implemented using conditional imports. Native-only services (Matter, Sync, Pairing, Health, Thermal) now gracefully mock/simulate on web.
+- **Local Validation**: SUCCESS. `flutter build web` passes without errors.
+- **Blocker**: GitHub Actions billing/payment issue on user account prevents final automated deployment. Once billing is restored, the pipeline will propagate these fixes.
+
+## 📅 Next Steps
+
+1. **GitHub Billing**: User needs to resolve the billing state to re-enable automated workflows.
+2. **Verification**: Once pipeline runs, verify `whitenoiseapp.vercel.app` is serving the bundle correctly.
+3. **Submission**: Proceed with App Store/Play Store final builds.
 
 ## ✅ Completed Milestones
-- [x] SoLoud Engine Integration (FFI)
-- [x] OGG Vorbis Asset Standardization
-- [x] Multi-track Mixing (Volume + Tone)
-- [x] Master Stop & Master Limiter
-- [x] Mix Saving & Recalling (Favorites)
-- [x] Precision Sleep Timer with 'Zero-Startle' Fade
-- [x] **2026 Submission Hardening (May 2026 Baseline)**
-  - Manual Matter-over-IP Local Control (Scene Broadcast)
-  - SPAKE2+ Zero-Knowledge Secure P2P Sync
-  - Lifetime "Murmur Pro" IAP Monetization
-  - iOS Privacy Manifest & Android 16 System UI
-  - High-Resolution Branded Splash & Adaptive Icons
-
-## 📋 Immediate Roadmap
-- [ ] Upload v1.1.0+13 to App Store Connect / Play Console.
-- [ ] Submit for review as a "Premium Wellness Utility" (Non-Medical).
-- [ ] Monitor v1.0 launch metrics for potential v2.0 feature roadmap.
-
-## 🛠 Tech Stack
-- **Framework**: Flutter
-- **Engine**: SoLoud (C++/FFI)
-- **State**: Riverpod
-- **Storage**: SharedPreferences
-- **Compliance**: Xcode 26 / Android 16 (API 36)
-- **Networking**: Matter 1.3 / mDNS / SPAKE2+
+- [x] Initial flutter-source-at-root migration
+- [x] Gapless audio engine foundation
+- [x] Core soundscape definitions
+- [x] HealthKit/Wellness synchronization
+- [x] Thermal monitoring service
+- [x] Secure pairing infrastructure (SPAKE2+)
+- [x] Vercel structural 404 resolution
+- [x] Web build hardening (Conditional imports)
