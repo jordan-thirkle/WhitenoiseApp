@@ -848,26 +848,32 @@ class _PulseIconState extends State<_PulseIcon> with SingleTickerProviderStateMi
     _scale = Tween<double>(begin: 1.0, end: 1.15).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
     );
+  }
 
-    final bool prefersReducedMotion = MediaQuery.of(context).accessibleNavigation;
-
-    if (widget.isActive && !prefersReducedMotion) {
-      _controller.repeat(reverse: true);
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _handleAnimation();
   }
 
   @override
   void didUpdateWidget(_PulseIcon oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final bool prefersReducedMotion = MediaQuery.of(context).accessibleNavigation;
-
     if (widget.isActive != oldWidget.isActive) {
-      if (widget.isActive && !prefersReducedMotion) {
+      _handleAnimation();
+    }
+  }
+
+  void _handleAnimation() {
+    final bool prefersReducedMotion = MediaQuery.of(context).accessibleNavigation;
+    
+    if (widget.isActive && !prefersReducedMotion) {
+      if (!_controller.isAnimating) {
         _controller.repeat(reverse: true);
-      } else {
-        _controller.stop();
-        _controller.animateTo(0, duration: const Duration(milliseconds: 500));
       }
+    } else {
+      _controller.stop();
+      _controller.animateTo(0, duration: const Duration(milliseconds: 500));
     }
   }
 
