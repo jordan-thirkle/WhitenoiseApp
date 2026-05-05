@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../main.dart';
 
 final audioEngineProvider = Provider<AudioEngineRepository>((ref) => AudioEngineRepository());
 
@@ -33,7 +32,6 @@ class AudioEngineRepository {
       player.setVolume(volume);
       player.setReleaseMode(ReleaseMode.loop);
       player.resume();
-      audioHandler.play();
     }
   }
 
@@ -42,17 +40,12 @@ class AudioEngineRepository {
     if (player != null) {
       player.stop();
     }
-    
-    if (!_players.values.any((p) => p.state == PlayerState.playing)) {
-      audioHandler.stop();
-    }
   }
 
   void stopAll() {
     for (final player in _players.values) {
       player.stop();
     }
-    audioHandler.stop();
   }
 
   void stopAllWithFade(Duration duration) {
