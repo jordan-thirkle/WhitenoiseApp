@@ -3,6 +3,7 @@ import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/features/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:murmur/core/iap_service.dart';
 import '../audio/mix_controller.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -45,6 +46,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             itemCount: _pages.length,
             onPageChanged: (idx) => setState(() => _currentPage = idx),
             itemBuilder: (context, idx) => _OnboardingPage(data: _pages[idx]),
+          ),
+          Consumer(
+            builder: (context, ref, _) {
+              final iap = ref.watch(iapServiceProvider);
+              return ValueListenableBuilder<bool>(
+                valueListenable: iap.isPro,
+                builder: (context, isPro, _) {
+                  if (isPro) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _completeOnboarding(context);
+                    });
+                  }
+                  return const SizedBox.shrink();
+                },
+              );
+            },
           ),
           Positioned(
             bottom: 60,
@@ -101,27 +118,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildPaywallButton() {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () => _completeOnboarding(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MurmurTheme.accent,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Consumer(
+      builder: (context, ref, _) {
+        return Column(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => ref.read(iapServiceProvider).buyPro(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MurmurTheme.accent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: const Text('UNLOCK PREMIUM — \$9.99', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
             ),
-            child: const Text('UNLOCK PREMIUM — \$9.99', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextButton(
-          onPressed: () => _completeOnboarding(context),
-          child: const Text('OR START FREE TRIAL', style: TextStyle(color: Colors.white30, fontSize: 12)),
-        ),
-      ],
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => _completeOnboarding(context),
+              child: const Text('OR START FREE TRIAL', style: TextStyle(color: Colors.white30, fontSize: 12)),
+            ),
+          ],
+        );
+      }
     );
   }
 

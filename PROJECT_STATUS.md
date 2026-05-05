@@ -5,11 +5,13 @@
 **Platform**: iOS 26 (Xcode 26) / Android 16 (API 36)
 
 ## 🚀 Recent Progress (Hardening Phase)
-- **Clinical De-risking**: Physically deleted GNN diagnostics, Matter head-elevation, and TUS-neuromodulation logic to avoid SaMD rejections.
+- **Clinical De-risking**: Physically deleted all SaMD (GNN, TUS, diagnostic) logic residue to avoid medical device rejections.
+- **Permission Hardening**: Removed `RECORD_AUDIO` permission from Android for privacy-first compliance.
 - **Compliance**: Generated `PrivacyInfo.xcprivacy` (iOS) and implemented Edge-to-Edge (Android 16) system UI.
-- **Wellness Pivot**: Rewrote `HealthService` as a compliant wellness-only HealthKit sync utility (sleep duration).
+- **Wellness Pivot**: Sanitized `StatsScreen` UI to remove medical jargon and simplified to wellness-only metrics.
 - **Audio Integrity**: Reverted to high-fidelity OGG loops for 8+ hour background stability (thermal hardening).
 - **Entitlements**: Created `Runner.entitlements` for functional iOS HealthKit support.
+- **Fixes**: Connected Onboarding paywall button to functional IAP flow.
 
 ## ✅ Completed Milestones
 - [x] SoLoud Engine Integration (FFI)

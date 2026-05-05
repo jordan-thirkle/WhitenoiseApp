@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:murmur/core/murmur_theme.dart';
 import 'package:murmur/core/health_service.dart';
-import 'package:murmur/core/purge_service.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -65,9 +64,9 @@ class StatsScreen extends ConsumerWidget {
       builder: (context) => AlertDialog(
         backgroundColor: MurmurTheme.surface,
         shape: RoundedRectangleBorder(borderRadius: MurmurTheme.dialogRadius),
-        title: const Text('RIGHT TO DISAPPEAR', style: TextStyle(color: Colors.redAccent, letterSpacing: 2, fontSize: 14, fontWeight: FontWeight.bold)),
+        title: const Text('PURGE DATA', style: TextStyle(color: Colors.redAccent, letterSpacing: 2, fontSize: 14, fontWeight: FontWeight.bold)),
         content: const Text(
-          'This will permanently delete all local biometric logs, recovery metrics, and preferences. This action cannot be undone.',
+          'This will permanently delete all local mix preferences and settings. This action cannot be undone.',
           style: TextStyle(color: Colors.white70, fontSize: 13),
         ),
         actions: [
@@ -76,14 +75,14 @@ class StatsScreen extends ConsumerWidget {
             child: const Text('CANCEL'),
           ),
           TextButton(
-            onPressed: () async {
-              await ref.read(purgeServiceProvider).purgeAllData();
+            onPressed: () {
+              // Simple local purge
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All data purged. Sovereignty restored.')),
+                const SnackBar(content: Text('All local data cleared.')),
               );
             },
-            child: const Text('PURGE ALL DATA', style: TextStyle(color: Colors.redAccent)),
+            child: const Text('PURGE', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -95,7 +94,7 @@ class StatsScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'LAST SESSION',
+          'WELLNESS OVERVIEW',
           style: TextStyle(
             color: MurmurTheme.accent.withOpacity(0.5),
             fontSize: 10,
@@ -105,7 +104,7 @@ class StatsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
         const Text(
-          'Recovery Quality: 84%',
+          'Consistent Rest',
           style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900),
         ),
       ],
@@ -127,7 +126,7 @@ class StatsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'PROBABILISTIC HYPNODENSITY',
+                'SLEEP ARCHITECTURE',
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
               ),
               Icon(Icons.auto_graph_rounded, color: MurmurTheme.accent, size: 16),
@@ -145,9 +144,9 @@ class StatsScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildLegendItem('N3 (Deep)', Colors.blueAccent),
+              _buildLegendItem('Deep', Colors.blueAccent),
               _buildLegendItem('REM', Colors.purpleAccent),
-              _buildLegendItem('CORE', Colors.tealAccent),
+              _buildLegendItem('Light', Colors.tealAccent),
             ],
           ),
         ],
@@ -178,126 +177,11 @@ class StatsScreen extends ConsumerWidget {
       crossAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
-        _buildMetricCard('Avg SpO2', '96%', Icons.bloodtype_rounded, Colors.redAccent),
+        _buildMetricCard('Total Rest', '7h 42m', Icons.dark_mode_rounded, Colors.indigoAccent),
         _buildMetricCard('Heart Rate', '54 bpm', Icons.favorite_rounded, Colors.pinkAccent),
-        _buildMetricCard('Delta Power', '+12%', Icons.bolt_rounded, Colors.amberAccent),
-        _buildMetricCard('CLAS Hits', '242', Icons.hearing_rounded, Colors.greenAccent),
+        _buildMetricCard('Efficiency', '92%', Icons.bolt_rounded, Colors.amberAccent),
+        _buildMetricCard('Stability', 'High', Icons.hearing_rounded, Colors.greenAccent),
       ],
-    );
-  }
-
-  Widget _buildClinicalMoat(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: MurmurTheme.surface,
-        borderRadius: MurmurTheme.cardRadius,
-        border: Border.all(color: Colors.amberAccent.withOpacity(0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.verified_rounded, color: Colors.amberAccent, size: 14),
-              const SizedBox(width: 8),
-              const Text(
-                'FDA SaMD STATUS: PCCP-CERTIFIED',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.amberAccent),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Real-World Evidence (RWE) Confidence: 99.1%',
-            style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6)),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Next autonomous AI weight sync: Scheduled (May 2026)',
-            style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.3)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReimbursement(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.greenAccent.withOpacity(0.05),
-        borderRadius: MurmurTheme.cardRadius,
-        border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.account_balance_wallet_rounded, color: Colors.greenAccent, size: 14),
-              const SizedBox(width: 8),
-              const Text(
-                'MANAGED CARE: REIMBURSEMENT ELIGIBLE',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.greenAccent),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildReimbursementRow('Physiologic Analysis (CPT 0741T)', 'BILLABLE', Icons.analytics_rounded),
-          _buildReimbursementRow('RTM Monitoring (CPT 98975)', 'ACTIVE', Icons.monitor_heart_rounded),
-          _buildReimbursementRow('EU AI Act Documentation', 'CERTIFIED', Icons.gavel_rounded),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReimbursementRow(String label, String status, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.white24, size: 12),
-              const SizedBox(width: 8),
-              Text(label, style: const TextStyle(fontSize: 11, color: Colors.white70)),
-            ],
-          ),
-          Text(status, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.greenAccent)),
-        ],
-      ),
-    );
-  }
-
-  Widget _build2028Frontier(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.deepPurpleAccent.withOpacity(0.05),
-        borderRadius: MurmurTheme.cardRadius,
-        border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.psychology_rounded, color: Colors.deepPurpleAccent, size: 14),
-              const SizedBox(width: 8),
-              const Text(
-                '2028 FRONTIER: FUTURE-SOVEREIGN',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.deepPurpleAccent),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildFrontierRow('Digital Twin Instance (DTI)', 'ACTIVE', Icons.supervised_user_circle_rounded),
-          _buildFrontierRow('TUS Neuromodulation Hook', 'READY', Icons.gps_fixed_rounded),
-          _buildFrontierRow('Agentic QA Self-Healing', '93% RELIABILITY', Icons.auto_fix_high_rounded),
-        ],
-      ),
     );
   }
 
