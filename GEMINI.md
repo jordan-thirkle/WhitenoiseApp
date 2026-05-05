@@ -3,7 +3,7 @@
 ## Project Overview
 
 **App Name**: Murmur
-**Type**: Flutter mobile app (iOS + Android)
+**Type**: Flutter multi-platform app (iOS + Android + Web)
 **Bundle ID**: `com.jordanthirkle.murmur`
 **Category**: Health & Fitness (Premium Wellness Utility)
 **Purpose**: High-fidelity ambient sleep sound app for families. Optimized for indefinite background playback with zero engagement prompts and absolute privacy.
@@ -16,11 +16,13 @@ WhitenoiseApp/
 ├── PROJECT_STATUS.md
 ├── research.md
 ├── .gitignore
+├── JordanThirkle.com/      ← Personal website integration
 └── murmur/                 ← Flutter project root
     ├── lib/
     ├── assets/
     ├── android/
     ├── ios/
+    ├── web/                ← Web demo / Project page
     └── pubspec.yaml
 ```
 

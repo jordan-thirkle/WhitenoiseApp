@@ -42,8 +42,6 @@ GoogleService-Info.plist
 
 # Dev Artifacts
 scratch/
-JordanThirkle.com/
 murmur/linux/
 murmur/macos/
-murmur/web/
 murmur/windows/

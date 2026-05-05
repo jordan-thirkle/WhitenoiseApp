@@ -12,7 +12,7 @@
 - **Audio Integrity**: Reverted to high-fidelity OGG loops for 8+ hour background stability (thermal hardening).
 - **Entitlements**: Created `Runner.entitlements` for functional iOS HealthKit support.
 - **Fixes**: Connected Onboarding paywall button to functional IAP flow.
-- **Cleanup**: Purged unrelated projects (JordanThirkle.com), unused platform folders (linux, macos, web, windows), and root screenshots for production readiness.
+- **Cleanup**: Sanitized repository structure while preserving critical website integration and the web platform for demo purposes.
 
 ## ✅ Completed Milestones
 - [x] SoLoud Engine Integration (FFI)
