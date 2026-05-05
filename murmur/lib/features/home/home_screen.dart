@@ -14,6 +14,7 @@ import 'package:murmur/features/audio/timer_controller.dart';
 import 'package:murmur/core/iap_service.dart';
 import 'package:murmur/core/health_service.dart';
 import 'package:murmur/features/stats/stats_screen.dart';
+import 'package:murmur/core/thermal_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -185,20 +186,44 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildThermalBadge(BuildContext context, WidgetRef ref) {
+    final thermalState = ref.watch(thermalServiceProvider);
+    
+    Color color;
+    String label;
+    
+    switch (thermalState) {
+      case ThermalState.optimal:
+        color = Colors.greenAccent;
+        label = 'OPTIMAL';
+        break;
+      case ThermalState.fair:
+        color = Colors.orangeAccent;
+        label = 'FAIR';
+        break;
+      case ThermalState.serious:
+        color = Colors.deepOrangeAccent;
+        label = 'SERIOUS';
+        break;
+      case ThermalState.critical:
+        color = Colors.redAccent;
+        label = 'CRITICAL';
+        break;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orangeAccent.withOpacity(0.05),
+        color: color.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orangeAccent.withOpacity(0.2)),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.thermostat_rounded, color: Colors.orangeAccent, size: 12),
+          Icon(Icons.thermostat_rounded, color: color, size: 12),
           const SizedBox(width: 4),
           Text(
-            'THERMAL: OPTIMAL',
-            style: TextStyle(color: Colors.orangeAccent.withOpacity(0.9), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
+            'THERMAL: $label',
+            style: TextStyle(color: color.withOpacity(0.9), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
           ),
         ],
       ),
