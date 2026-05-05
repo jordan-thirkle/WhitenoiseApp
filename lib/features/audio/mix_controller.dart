@@ -13,7 +13,7 @@ class MixController extends StateNotifier<List<MixModel>> {
 
   void _loadFromPrefs() {
     if (_prefs == null) return;
-    final jsonString = _prefs!.getString(_storageKey);
+    final jsonString = _prefs.getString(_storageKey);
     if (jsonString != null) {
       final List<dynamic> decoded = json.decode(jsonString);
       state = decoded.map((item) => MixModel.fromJson(item)).toList();
@@ -39,7 +39,7 @@ class MixController extends StateNotifier<List<MixModel>> {
   Future<void> _syncToPrefs() async {
     if (_prefs == null) return;
     final jsonString = json.encode(state.map((mix) => mix.toJson()).toList());
-    await _prefs!.setString(_storageKey, jsonString);
+    await _prefs.setString(_storageKey, jsonString);
   }
 }
 

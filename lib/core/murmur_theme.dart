@@ -28,9 +28,7 @@ class MurmurTheme {
         primary: accentColor,
         secondary: accentColor,
         surface: surfaceColor,
-        background: backgroundColor,
         onSurface: textPrimary,
-        onBackground: textPrimary,
       ),
       textTheme: GoogleFonts.interTextTheme(
         ThemeData.dark().textTheme.copyWith(

@@ -1,42 +1,37 @@
-# Murmur — Project Status
+# Project Status: Murmur
 
-**Current Version**: v1.1.0+13 (Built-Right MVP)
-**Status**: SUBMISSION READY (May 2026)
-**Platform**: iOS 26 (Xcode 26) / Android 16 (API 36)
+## Overview
+Murmur is a premium pediatric wellness application designed for 2026 standards, focusing on high-fidelity ambient synthesis, data sovereignty, and cross-platform accessibility.
 
-## 🚀 Recent Progress (Hardening Phase)
-- **Thermal Intelligence**: Implemented `ThermalService` for dynamic device temperature monitoring with real-time UI feedback.
+## 🚀 Recent Accomplishments
 - **HealthKit Sync**: Integrated functional HealthKit/Google Fit synchronization for wellness-focused sleep tracking.
 - **Web Demo Engine**: Refactored `AudioEngineRepository` with conditional fallback (Audioplayers) to support browser-based demonstrations.
-- **Repo Unification**: Unified `JordanThirkle.com` into the main repository and configured `murmur.vercel.app` for the live app demo.
-- **Cleanup**: Sanitized repository structure while preserving critical website integration and the web platform for demo purposes.
+- **Repo Unification**: Unified repository structure and JordanThirkle.com personal website integration.
+- **Web Demo Engine**: Refactored `AudioEngineRepository` with conditional fallback (Audioplayers) to support browser-based demonstrations.
 - **CI/CD Hardening**: Updated Vercel deployment pipeline to use modern `vercel-token` and removed legacy Zeit references.
-- **UI & Codebase Modernization**: Resolved all build-time deprecation warnings (withValues) and BuildContext async gap issues.
+- **UI & Codebase Modernization**: Resolved build-time deprecation warnings (withValues) and BuildContext async gap issues.
+- **Sync Service Hardening**: Resolved critical merge conflicts in P2P synchronization and Health services.
 - **Dependency Alignment**: Aligned Health Service with v13.x API and corrected missing foundation imports for web compatibility.
 
+## 🏁 Current Status: Hardened & Submission Ready
+
+- **Code Stability**: FIXED. All repository merge conflicts resolved and `dart analyze` passes with zero issues.
+- **Vercel Deployment**: FIXED. Structural 404 resolved by pointing deployment to `build/web` and relocating `vercel.json` to SPA-compatible path.
+- **Web Build**: FIXED. Fully cross-platform architecture implemented using conditional imports. Native-only services (Matter, Sync, Pairing, Health, Thermal) now gracefully mock/simulate on web.
+- **Local Validation**: SUCCESS. `flutter build web` passes without errors.
+
+## 📅 Next Steps
+
+1. **Verification**: Verify `whitenoiseapp.vercel.app` is serving the bundle correctly.
+2. **Submission**: Proceed with App Store/Play Store final builds.
+
+
 ## ✅ Completed Milestones
-- [x] SoLoud Engine Integration (FFI)
-- [x] OGG Vorbis Asset Standardization
-- [x] Multi-track Mixing (Volume + Tone)
-- [x] Master Stop & Master Limiter
-- [x] Mix Saving & Recalling (Favorites)
-- [x] Precision Sleep Timer with 'Zero-Startle' Fade
-- [x] **2026 Submission Hardening (May 2026 Baseline)**
-  - Manual Matter-over-IP Local Control (Scene Broadcast)
-  - SPAKE2+ Zero-Knowledge Secure P2P Sync
-  - Lifetime "Murmur Pro" IAP Monetization
-  - iOS Privacy Manifest & Android 16 System UI
-  - High-Resolution Branded Splash & Adaptive Icons
-
-## 📋 Immediate Roadmap
-- [ ] Upload v1.1.0+13 to App Store Connect / Play Console.
-- [ ] Submit for review as a "Premium Wellness Utility" (Non-Medical).
-- [ ] Monitor v1.0 launch metrics for potential v2.0 feature roadmap.
-
-## 🛠 Tech Stack
-- **Framework**: Flutter
-- **Engine**: SoLoud (C++/FFI)
-- **State**: Riverpod
-- **Storage**: SharedPreferences
-- **Compliance**: Xcode 26 / Android 16 (API 36)
-- **Networking**: Matter 1.3 / mDNS / SPAKE2+
+- [x] Initial flutter-source-at-root migration
+- [x] Gapless audio engine foundation
+- [x] Core soundscape definitions
+- [x] HealthKit/Wellness synchronization
+- [x] Thermal monitoring service
+- [x] Secure pairing infrastructure (SPAKE2+)
+- [x] Vercel structural 404 resolution
+- [x] Web build hardening (Conditional imports)
