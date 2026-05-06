@@ -43,7 +43,7 @@ class MixController extends StateNotifier<List<MixModel>> {
   }
 }
 
-final sharedPrefsProvider = Provider<SharedPreferences?>((ref) => throw UnimplementedError());
+final sharedPrefsProvider = Provider<SharedPreferences?>((ref) => null);
 
 final mixControllerProvider = StateNotifierProvider<MixController, List<MixModel>>((ref) {
   final prefs = ref.watch(sharedPrefsProvider);

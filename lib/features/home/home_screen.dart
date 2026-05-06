@@ -118,66 +118,80 @@ class HomeScreen extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: Text(
-                    timerState.isRunning 
-                      ? 'TIMER: ${_formatDuration(timerState.remaining!)}'
-                      : 'MULTI-TRACK MIXER',
-                    key: ValueKey(timerState.isRunning),
-                    style: TextStyle(
-                      color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withValues(alpha: 0.4),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Text(
+                      timerState.isRunning 
+                        ? 'TIMER: ${_formatDuration(timerState.remaining!)}'
+                        : 'MULTI-TRACK MIXER',
+                      key: ValueKey(timerState.isRunning),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: timerState.isRunning ? MurmurTheme.accent : Colors.white.withValues(alpha: 0.4),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  width: timerState.isRunning ? 80 : 40,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: timerState.isRunning ? MurmurTheme.accent : MurmurTheme.accent.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+                  const SizedBox(height: 4),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    width: timerState.isRunning ? 80 : 40,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: timerState.isRunning ? MurmurTheme.accent : MurmurTheme.accent.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.favorite_rounded, color: Colors.pinkAccent, size: 20),
-                  onPressed: () {
-                    ref.read(healthServiceProvider).openHealthDashboard();
-                  },
-                  tooltip: 'Health Sync',
-                  visualDensity: VisualDensity.comfortable,
-                  padding: const EdgeInsets.all(12),
+            Expanded(
+              flex: 4,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.favorite_rounded, color: Colors.pinkAccent, size: 20),
+                      onPressed: () {
+                        ref.read(healthServiceProvider).openHealthDashboard();
+                      },
+                      tooltip: 'Health Sync',
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        timerState.isRunning ? Icons.timer_rounded : Icons.timer_outlined,
+                        color: timerState.isRunning ? MurmurTheme.accent : Colors.white30,
+                        size: 20,
+                      ),
+                      onPressed: () => _showTimerSheet(context, ref),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 4),
+                    _buildThermalBadge(context, ref),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: () => _showFavoritesSheet(context, ref),
+                      icon: const Icon(Icons.star_rounded, color: Colors.white24, size: 20),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: Icon(
-                    timerState.isRunning ? Icons.timer_rounded : Icons.timer_outlined,
-                    color: timerState.isRunning ? MurmurTheme.accent : Colors.white30,
-                    size: 20,
-                  ),
-                  onPressed: () => _showTimerSheet(context, ref),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  constraints: const BoxConstraints(),
-                ),
-                _buildThermalBadge(context, ref),
-                const SizedBox(width: 12),
-                IconButton(
-                  onPressed: () => _showFavoritesSheet(context, ref),
-                  icon: const Icon(Icons.favorite_rounded, color: Colors.white24, size: 20),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -398,13 +412,13 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildSoundGrid(BuildContext context, WidgetRef ref, bool isPro) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 0.85,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 0.88,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) {
@@ -596,8 +610,8 @@ class HomeScreen extends ConsumerWidget {
     
     // Apply settings to each sound
     for (final sound in availableSounds) {
-      final setting = mix.settings[sound.assetPath] ?? SoundSetting(volume: 0.5, tone: 1.0, isPlaying: false);
-      ref.read(soundCardProvider(sound.assetPath).notifier).applySetting(setting);
+      final setting = mix.settings[sound.id] ?? SoundSetting(volume: 0.5, tone: 1.0, isPlaying: false);
+      ref.read(soundCardProvider(sound.id).notifier).applySetting(setting);
     }
   }
 
@@ -641,8 +655,8 @@ class HomeScreen extends ConsumerWidget {
     final Map<String, SoundSetting> currentSettings = {};
     
     for (final sound in availableSounds) {
-      final state = ref.read(soundCardProvider(sound.assetPath));
-      currentSettings[sound.assetPath] = SoundSetting(
+      final state = ref.read(soundCardProvider(sound.id));
+      currentSettings[sound.id] = SoundSetting(
         volume: state.volume,
         tone: state.tone,
         isPlaying: state.isActive,
@@ -660,8 +674,8 @@ class SoundCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(soundCardProvider(sound.assetPath));
-    final controller = ref.read(soundCardProvider(sound.assetPath).notifier);
+    final state = ref.watch(soundCardProvider(sound.id));
+    final controller = ref.read(soundCardProvider(sound.id).notifier);
     final bool isLocked = sound.isPremium && !isPro;
 
     return AnimatedContainer(
@@ -723,14 +737,23 @@ class SoundCard extends ConsumerWidget {
                           const SizedBox(height: 16),
                           AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
-                            child: Icon(
-                              isLocked 
-                                ? Icons.lock_outline_rounded
-                                : (state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded),
-                              key: ValueKey(state.isActive || isLocked),
-                              color: isLocked ? Colors.white24 : (state.isActive ? MurmurTheme.accent : Colors.white24),
-                              size: 32,
-                            ),
+                            child: state.isLoading
+                              ? SizedBox(
+                                  width: 32,
+                                  height: 32,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(MurmurTheme.accent.withValues(alpha: 0.5)),
+                                  ),
+                                )
+                              : Icon(
+                                  isLocked 
+                                    ? Icons.lock_outline_rounded
+                                    : (state.isActive ? Icons.pause_rounded : Icons.power_settings_new_rounded),
+                                  key: ValueKey(state.isActive || isLocked || state.isLoading),
+                                  color: isLocked ? Colors.white24 : (state.isActive ? MurmurTheme.accent : Colors.white24),
+                                  size: 32,
+                                ),
                           ),
                         ],
                       ),

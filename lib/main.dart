@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:quick_actions/quick_actions.dart';
+import 'core/murmur_theme.dart';
 import 'core/audio_engine_repository.dart';
 import 'core/audio_handler.dart';
 import 'features/home/home_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/audio/mix_controller.dart';
 import 'core/iap_service.dart';
-import 'core/sync_service.dart';
-import 'core/matter_service.dart';
+import 'core/play_services_helper.dart';
 
 // Global audio handler
 late AudioHandler audioHandler;
@@ -37,13 +36,16 @@ void main() async {
   
   // Initialize Intelligence Layer (native only — no web implementations)
   final iapService = IapService();
-  if (!kIsWeb) iapService.init();
-
-  final syncService = SyncService();
-  if (!kIsWeb) syncService.start();
-
-  final matterService = MatterService();
-  if (!kIsWeb) await matterService.init();
+  
+  try {
+    if (!kIsWeb) {
+      iapService.init(prefs);
+      // Play Store Hardening: Check for updates on launch
+      PlayServicesHelper.checkForUpdates();
+    }
+  } catch (e) {
+    debugPrint('Critical: Service initialization failed: $e');
+  }
 
   // Initialize Audio Engine
   final repository = AudioEngineRepository();
@@ -67,7 +69,7 @@ void main() async {
     const QuickActions quickActions = QuickActions();
     quickActions.initialize((type) {
       if (type == 'action_rain') {
-        repository.playSound('assets/audio/white_noise.ogg', volume: 0.6, tone: 0.4);
+        repository.playSound('rain', 'assets/audio/pink_noise.ogg', volume: 0.6, tone: 0.4);
       }
     });
     quickActions.setShortcutItems(<ShortcutItem>[
@@ -81,8 +83,6 @@ void main() async {
       overrides: [
         sharedPrefsProvider.overrideWithValue(prefs),
         iapServiceProvider.overrideWithValue(iapService),
-        syncServiceProvider.overrideWithValue(syncService),
-        matterServiceProvider.overrideWithValue(matterService),
       ],
       child: MurmurApp(startScreen: onboardingComplete ? const HomeScreen() : const OnboardingScreen()),
     ),
@@ -98,14 +98,7 @@ class MurmurApp extends StatelessWidget {
     return MaterialApp(
       title: 'Murmur',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0D0F14),
-        textTheme: GoogleFonts.interTextTheme(
-          ThemeData.dark().textTheme,
-        ),
-        useMaterial3: true,
-      ),
+      theme: MurmurTheme.darkTheme,
       home: startScreen,
     );
   }

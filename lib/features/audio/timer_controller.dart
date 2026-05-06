@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio_engine_repository.dart';
+import '../../core/play_services_helper.dart';
 
 class TimerState {
   final Duration? remaining;
@@ -77,6 +78,11 @@ class TimerController extends StateNotifier<TimerState> {
     _ticker?.cancel();
     _repository.stopAll();
     state = TimerState();
+    
+    // Play Store Hardening: Track successful sessions and prompt for review
+    PlayServicesHelper.incrementSessionCount().then((_) {
+      PlayServicesHelper.requestReviewIfAppropriate();
+    });
   }
 
   @override

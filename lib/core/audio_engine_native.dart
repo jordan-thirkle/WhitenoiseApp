@@ -4,6 +4,7 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
+import '../models/sound_model.dart';
 
 final audioEngineProvider = Provider<AudioEngineRepository>((ref) => AudioEngineRepository());
 
@@ -14,8 +15,10 @@ class AudioEngineRepository {
   AudioEngineRepository._internal();
 
   final SoLoud _soloud = SoLoud.instance;
-  final Map<String, AudioSource> _loadedSources = {};
-  final Map<String, SoundHandle> _activeHandles = {};
+  
+  // Isolate sources by soundId to allow independent filtering/tone
+  final Map<String, AudioSource> _loadedSources = {}; // soundId -> source
+  final Map<String, SoundHandle> _activeHandles = {}; // soundId -> handle
 
   bool get isInitialized => _soloud.isInitialized;
 
@@ -32,38 +35,50 @@ class AudioEngineRepository {
     }
   }
 
-  Future<void> loadSound(String assetPath) async {
-    if (_loadedSources.containsKey(assetPath)) return;
+  Future<void> _loadSoundForId(String soundId, String assetPath) async {
     try {
       final source = await _soloud.loadAsset(assetPath);
-      _loadedSources[assetPath] = source;
+      _loadedSources[soundId] = source;
     } catch (e) {
-      debugPrint('Error loading sound $assetPath: $e');
+      debugPrint('Error loading sound $soundId ($assetPath): $e');
     }
   }
 
-  void playSound(String assetPath, {double volume = 0.5, double tone = 1.0}) {
-    if (!isInitialized) return;
-    final source = _loadedSources[assetPath];
+  Future<void> playSound(String soundId, String assetPath, {double volume = 0.5, double tone = 1.0}) async {
+    if (!isInitialized) await init();
+    
+    // Ensure existing handle is cleaned up
+    stopSound(soundId);
+    
+    // Ensure source is loaded for this specific ID
+    if (!_loadedSources.containsKey(soundId)) {
+      await _loadSoundForId(soundId, assetPath);
+    }
+    
+    final source = _loadedSources[soundId];
     if (source == null) return;
 
     try {
       final handle = _soloud.play(source, volume: volume, looping: true);
-      _activeHandles[assetPath] = handle;
+      _activeHandles[soundId] = handle;
       _updateTone(source, handle, tone);
-      audioHandler.play();
+      
+      if (!kIsWeb) audioHandler.play();
     } catch (e) {
-      debugPrint('Error playing sound $assetPath: $e');
+      debugPrint('Error playing sound $soundId ($assetPath): $e');
     }
   }
 
-  void stopSound(String assetPath) {
-    final handle = _activeHandles[assetPath];
+  void stopSound(String soundId) {
+    final handle = _activeHandles[soundId];
     if (handle != null) {
       _soloud.stop(handle);
-      _activeHandles.remove(assetPath);
+      _activeHandles.remove(soundId);
     }
-    if (_activeHandles.isEmpty) audioHandler.stop();
+    
+    if (_activeHandles.isEmpty && !kIsWeb) {
+      audioHandler.stop();
+    }
   }
 
   void stopAll() {
@@ -71,7 +86,7 @@ class AudioEngineRepository {
       _soloud.stop(handle);
     }
     _activeHandles.clear();
-    audioHandler.stop();
+    if (!kIsWeb) audioHandler.stop();
   }
 
   void stopAllWithFade(Duration duration) {
@@ -80,37 +95,48 @@ class AudioEngineRepository {
       _soloud.scheduleStop(handle, duration);
     }
     Timer(duration, () => _activeHandles.clear());
+    if (!kIsWeb) audioHandler.stop();
   }
 
-  void updateVolume(String assetPath, double volume) {
-    final handle = _activeHandles[assetPath];
-    if (handle != null) _soloud.setVolume(handle, volume);
+  void updateVolume(String soundId, double volume) {
+    final handle = _activeHandles[soundId];
+    if (handle != null) {
+      _soloud.setVolume(handle, volume);
+    }
   }
 
-  void updateTone(String assetPath, double toneFactor) {
-    final source = _loadedSources[assetPath];
-    final handle = _activeHandles[assetPath];
-    if (source != null && handle != null) _updateTone(source, handle, toneFactor);
+  void updateTone(String soundId, String assetPath, double toneFactor) {
+    final source = _loadedSources[soundId];
+    final handle = _activeHandles[soundId];
+    if (source != null && handle != null) {
+      _updateTone(source, handle, toneFactor);
+    }
   }
 
   void _updateTone(AudioSource source, SoundHandle handle, double toneFactor) {
     try {
-      final double minFreq = 400.0;
-      final double maxFreq = 16000.0;
+      final double minFreq = 300.0;
+      final double maxFreq = 14000.0;
       final double freq = minFreq * math.pow(maxFreq / minFreq, toneFactor);
+      
       source.filters.biquadFilter.activate();
+      source.filters.biquadFilter.type(soundHandle: handle).value = 0.0; // Lowpass
       source.filters.biquadFilter.frequency(soundHandle: handle).value = freq;
-      source.filters.biquadFilter.type(soundHandle: handle).value = 0.0;
     } catch (e) {
       debugPrint('Error updating tone DSP: $e');
     }
   }
 
   void applyGlobalToneShelf(double toneFactor) {
-    for (final assetPath in _activeHandles.keys) {
-      updateTone(assetPath, toneFactor);
+    for (final sound in availableSounds) {
+      if (_activeHandles.containsKey(sound.id)) {
+        updateTone(sound.id, sound.assetPath, toneFactor);
+      }
     }
   }
 
-  void dispose() => _soloud.deinit();
+  void dispose() {
+    stopAll();
+    _soloud.deinit();
+  }
 }

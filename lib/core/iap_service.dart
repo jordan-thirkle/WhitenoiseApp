@@ -16,10 +16,10 @@ class IapService {
   final ValueNotifier<bool> isAvailable = ValueNotifier<bool>(false);
   final ValueNotifier<List<ProductDetails>> products = ValueNotifier<List<ProductDetails>>([]);
 
-  void init() async {
+  void init(SharedPreferences prefs) async {
     final Stream<List<PurchaseDetails>> purchaseUpdated = _iap.purchaseStream;
     _subscription = purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList);
+      _listenToPurchaseUpdated(purchaseDetailsList, prefs);
     }, onDone: () {
       _subscription.cancel();
     }, onError: (Object error) {
@@ -29,7 +29,7 @@ class IapService {
     isAvailable.value = await _iap.isAvailable();
     if (isAvailable.value) {
       await _loadProducts();
-      await _loadLocalStatus();
+      isPro.value = prefs.getBool('is_pro') ?? false;
     }
   }
 
@@ -38,11 +38,6 @@ class IapService {
     if (response.error == null) {
       products.value = response.productDetails;
     }
-  }
-
-  Future<void> _loadLocalStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    isPro.value = prefs.getBool('is_pro') ?? false;
   }
 
   Future<void> buyPro() async {
@@ -55,7 +50,7 @@ class IapService {
     await _iap.restorePurchases();
   }
 
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList, SharedPreferences prefs) {
     for (final purchase in purchaseDetailsList) {
       if (purchase.status == PurchaseStatus.pending) {
         // Show pending UI if needed
@@ -64,7 +59,7 @@ class IapService {
           debugPrint('Purchase Error: ${purchase.error}');
         } else if (purchase.status == PurchaseStatus.purchased ||
                    purchase.status == PurchaseStatus.restored) {
-          _verifyPurchase(purchase);
+          _verifyPurchase(purchase, prefs);
         }
         
         if (purchase.pendingCompletePurchase) {
@@ -74,11 +69,10 @@ class IapService {
     }
   }
 
-  void _verifyPurchase(PurchaseDetails purchase) async {
+  void _verifyPurchase(PurchaseDetails purchase, SharedPreferences prefs) async {
     // In a zero-data model, we perform local verification of the product ID
     if (purchase.productID == proId) {
       isPro.value = true;
-      final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('is_pro', true);
       debugPrint('Murmur Pro Activated!');
     }

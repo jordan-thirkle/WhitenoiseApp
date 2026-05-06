@@ -11,6 +11,7 @@ class AudioEngineRepository {
   factory AudioEngineRepository() => _instance;
   AudioEngineRepository._internal();
 
+  // soundId -> AudioPlayer to allow multiple instances of same asset
   final Map<String, AudioPlayer> _players = {};
 
   bool get isInitialized => true;
@@ -19,27 +20,27 @@ class AudioEngineRepository {
     debugPrint('AudioEngine: Web Fallback (Audioplayers) Initialized');
   }
 
-  Future<void> loadSound(String assetPath) async {
-    if (_players.containsKey(assetPath)) return;
-    final player = AudioPlayer();
-    await player.setSource(AssetSource(assetPath.replaceFirst('assets/', '')));
-    _players[assetPath] = player;
-  }
+  Future<void> playSound(String soundId, String assetPath, {double volume = 0.5, double tone = 1.0}) async {
+    // If player exists, stop it first
+    await _players[soundId]?.stop();
 
-  void playSound(String assetPath, {double volume = 0.5, double tone = 1.0}) {
-    final player = _players[assetPath];
+    if (!_players.containsKey(soundId)) {
+      final player = AudioPlayer();
+      await player.setSource(AssetSource(assetPath.replaceFirst('assets/', '')));
+      _players[soundId] = player;
+    }
+
+    final player = _players[soundId];
     if (player != null) {
-      player.setVolume(volume);
-      player.setReleaseMode(ReleaseMode.loop);
-      player.resume();
+      await player.setVolume(volume);
+      await player.setPlaybackRate(tone); // Web tone fallback
+      await player.setReleaseMode(ReleaseMode.loop);
+      await player.resume();
     }
   }
 
-  void stopSound(String assetPath) {
-    final player = _players[assetPath];
-    if (player != null) {
-      player.stop();
-    }
+  void stopSound(String soundId) {
+    _players[soundId]?.stop();
   }
 
   void stopAll() {
@@ -49,17 +50,16 @@ class AudioEngineRepository {
   }
 
   void stopAllWithFade(Duration duration) {
-    // Basic stop for web (fade is complex with audioplayers on web)
+    // Web lacks native cross-fade with Audioplayers easily, so immediate stop
     stopAll();
   }
 
-  void updateVolume(String assetPath, double volume) {
-    _players[assetPath]?.setVolume(volume);
+  void updateVolume(String soundId, double volume) {
+    _players[soundId]?.setVolume(volume);
   }
 
-  void updateTone(String assetPath, double toneFactor) {
-    // Tone control (playback rate) as a fallback for web
-    _players[assetPath]?.setPlaybackRate(toneFactor);
+  void updateTone(String soundId, String assetPath, double toneFactor) {
+    _players[soundId]?.setPlaybackRate(toneFactor);
   }
 
   void applyGlobalToneShelf(double toneFactor) {
@@ -72,5 +72,6 @@ class AudioEngineRepository {
     for (final player in _players.values) {
       player.dispose();
     }
+    _players.clear();
   }
 }

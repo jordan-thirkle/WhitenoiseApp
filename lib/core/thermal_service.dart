@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'audio_engine_repository.dart';
 
 enum ThermalState {
   optimal,
@@ -11,14 +12,16 @@ enum ThermalState {
 }
 
 final thermalServiceProvider = StateNotifierProvider<ThermalService, ThermalState>((ref) {
-  return ThermalService();
+  final repository = ref.watch(audioEngineProvider);
+  return ThermalService(repository);
 });
 
 class ThermalService extends StateNotifier<ThermalState> {
   static const MethodChannel _channel = MethodChannel('com.jordanthirkle.murmur/thermal');
+  final AudioEngineRepository _repository;
   Timer? _timer;
 
-  ThermalService() : super(ThermalState.optimal) {
+  ThermalService(this._repository) : super(ThermalState.optimal) {
     _startMonitoring();
   }
 
@@ -38,10 +41,21 @@ class ThermalService extends StateNotifier<ThermalState> {
     try {
       final int? result = await _channel.invokeMethod<int>('getThermalState');
       if (result != null) {
-        state = _mapIntToState(result);
+        final newState = _mapIntToState(result);
+        if (newState != state) {
+          state = newState;
+          _handleStateChange(newState);
+        }
       }
     } on PlatformException catch (_) {
       state = ThermalState.optimal;
+    }
+  }
+
+  void _handleStateChange(ThermalState newState) {
+    if (newState == ThermalState.critical) {
+      debugPrint('THERMAL CRITICAL: Emergency Audio Cutoff triggered.');
+      _repository.stopAll();
     }
   }
 
